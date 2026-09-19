@@ -43,7 +43,7 @@ It should be ready to take HTTP/POST images and will return depth maps/images in
 
 > Check out `~/robot_ws/src/image_to_3d/tests` directory
 
-The following tests interact with the server:
+The following tests interact with the server in a client role:
 
 - tests/test_depth_server.py
 - tests/test_depth_server_gui.py
