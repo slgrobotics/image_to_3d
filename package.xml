@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>image_to_3d</name>
+  <version>0.0.0</version>
+  <description>image_to_3d is a ROS 2 package for converting camera images into depth and derived 3D representations. It provides nodes for image-to-depth estimation and for converting depth images into PointCloud2 and LaserScan messages.</description>
+  <maintainer email="sergei@example.com">sergei</maintainer>
+  <license>TODO</license>
+  <buildtool_depend>ament_python</buildtool_depend>
+  <exec_depend>launch</exec_depend>
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
