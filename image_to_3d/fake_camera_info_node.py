@@ -1,6 +1,56 @@
 #!/usr/bin/env python3
 
-"""Publish synthetic CameraInfo synchronized with an image topic."""
+"""
+Publish images with synthetic CameraInfo derived from camera field of view.
+
+This node subscribes to a raw or compressed camera image, determines the image
+dimensions, and republishes the image together with a synchronized CameraInfo
+message.
+
+Camera intrinsics are calculated from the configured horizontal and vertical
+fields of view (HFOV and VFOV) using a pinhole camera model. The optical center
+is assumed to be at the center of the image, and lens distortion is assumed to
+be zero.
+
+The node is intended for cameras or image sources that do not provide their own
+CameraInfo, allowing the image stream to be used by ROS 2 components that
+require camera intrinsics, such as depth-image projection and 3D perception
+tools.
+
+Both raw and compressed image topics are supported independently for input and
+output.
+
+Parameters:
+  camera_fov:
+    Horizontal and vertical field of view in degrees, specified as
+    "HFOV,VFOV".
+
+```
+input_topic:
+    Input camera image topic.
+
+output_topic:
+    Republished image topic synchronized with CameraInfo.
+
+camera_info_topic:
+    Output CameraInfo topic.
+
+input_type:
+    Input image type: "raw" or "compressed".
+
+output_type:
+    Output image type: "raw" or "compressed".
+
+frame_id:
+    Optional frame ID override. If empty, the input image frame ID is used.
+```
+
+Note:
+The generated CameraInfo is an approximation based on the supplied field
+of view. It does not replace a proper intrinsic camera calibration,
+particularly for cameras with significant lens distortion.
+"""
+
 
 import math
 
