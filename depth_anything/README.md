@@ -41,6 +41,16 @@ Run the server:
 
 It should be ready to take HTTP/POST images and will return depth maps/images in PNG uint_16 format, ready for ROS2 processing.
 
+> Check out `~/robot_ws/src/image_to_3d/tests` directory
+
+The following tests interact with the server:
+
+- tests/test_depth_server.py
+- tests/test_depth_server_gui.py
+- tests/test_depth_webcam.py
+
+A stand-alone `tests/test_depth.py` can directly call Depth Anything V2 model (while running under a virtual environment).
+
 -------------------------
 
 Back to [Package README](https://github.com/slgrobotics/image_to_3d/blob/main/README.md)
