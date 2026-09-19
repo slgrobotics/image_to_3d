@@ -2,8 +2,8 @@ Back to [Main Project Home](https://github.com/slgrobotics/articubot_one/wiki)
 
 ## Image to 3d ROS2 Package
 **image_to_3d** is a ROS 2 package for converting camera images into depth and derived 3D representations.
-It provides nodes for image-to-depth estimation and for converting depth images into *PointCloud2* and *LaserScan* messages.
-It also contains node that translates camera X,Y pixel coordinates to 3D coordinates.
+- It provides nodes for image-to-depth estimation and for converting depth images into *PointCloud2* and *LaserScan* messages.
+- It also contains node that translates camera X,Y pixel coordinates to 3D coordinates.
 
 ### Build and run
 
@@ -27,6 +27,12 @@ colcon build --packages-select image_to_3d --symlink-install
 source install/setup.bash
 ros2 launch image_to_3d huskylens2.launch.py
 ```
+**Note:**
+- some examples below use *HuskyLens 2* camera for input and related [package](https://github.com/slgrobotics/huskylens2_ros2).
+- you can use any monocular camera as input. If your camera is calibrated (for a specific WxH resolution, like 640x480) your driver node will publish correct CameraInfo
+- if your camera driver node does not publish CameraInfo (or if it doesn't produce desired results) - use `image_to_3d/fake_camera_info_node.py`
+[node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py).
+
 
 ### Depth Anything V2 HTTP Server
 
@@ -79,9 +85,9 @@ The following tests interact with the server in a client role:
 
 A stand-alone `tests/test_depth.py` can directly call Depth Anything V2 model (while running under a [virtual environment](https://github.com/slgrobotics/articubot_one/wiki/Depth-Anything-V2)).
 
-### Depth node
+### Image to Depth node
 
-A universal *depth_node* is included in the package. It subscribes to an image topic and queries the *Depth Anything V2 server*, publishing its response as depth maps/images.
+A universal *image_to_depth_node* is included in the package. It subscribes to an image topic and queries the *Depth Anything V2 server*, publishing its response as depth maps/images.
 
 This node works with any node publishing compressed images.
 
@@ -94,11 +100,11 @@ Make sure that the Depth Anything V2 server is running, e.g.:
 
 Run it (on the same machine as *Depth Anything V2 server* to minimize image traffic):
 ```
-ros2 run image_to_3d depth_node
+ros2 run image_to_3d image_to_depth_node
 
   or
 
-ros2 run image_to_3d depth_node --ros-args -p depth_server:=http://127.0.0.1:5001/depth
+ros2 run image_to_3d image_to_depth_node --ros-args -p depth_server:=http://127.0.0.1:5001/depth
 ```
 
 Here is how it works when processing *HuskyLens 2* images:
@@ -107,14 +113,14 @@ Here is how it works when processing *HuskyLens 2* images:
                     │
                     │ huskylens/image/compressed topic
                     ▼
-     ROS 2 depth_node -----┐
-                           │ HTTP POST
-                           ▼
+     ROS 2 image_to_depth_node -----┐
+                                    │ HTTP POST
+                                    ▼
                         ┌──────────────────────────┐
                         │ Depth Anything V2 server │
-                        └──┬───────────────────────┘
-                           ▼ HTTP response -  16-bit depth map
-     ROS 2 depth_node -----┘
+                        └───────────┬──────────────┘
+                                    ▼ HTTP response -  16-bit depth map
+     ROS 2 image_to_depth_node -----┘
                  │  `huskylens/depth/image` topic
                  ▼
         Any ROS2 subscribers
@@ -126,7 +132,7 @@ For example, this is how an image from [HuskyLens 2](https://github.com/slgrobot
 
 <img width="757" height="567" alt="Screenshot from 2026-09-15 17-08-00" src="https://github.com/user-attachments/assets/866af907-b61e-4dff-a46e-b22270b31044" />
 
-Depth image returned by *Depth Anything V2 server* and published by *depth_node* as `huskylens/depth/image`:
+Depth image returned by *Depth Anything V2 server* and published by *image_to_depth_node* as, for example, `huskylens/depth/image`:
 
 <img width="757" height="567" alt="Screenshot from 2026-09-15 17-07-47" src="https://github.com/user-attachments/assets/bb1fea82-c46f-45af-97d7-a5b0faf03fe5" />
 
@@ -158,20 +164,20 @@ sudo apt install ros-${ROS_DISTRO}-image-pipeline
 
 When using Depth Anything pipeline, the intended flow is:
 ```
-     Camera Publisher Node ──────┐
-             │                   │
-             ▼                   │
-       sensor_msgs/Image         │
-             ↓                   │
-     ROS 2 client (depth_node)   │
-             ↓ HTTP POST         │
-       Depth Anything server     │
-             ↓                   │
-       16-bit PNG, millimeters   │
-             ↓ HTTP              │
-     ROS 2 client (depth_node)   │
-             │                   │
-             ▼                   ▼
+     Camera Publisher Node ───────────────┐
+             │                            │
+             ▼                            │
+       sensor_msgs/Image                  │
+             ↓                            │
+     ROS 2 client (image_to_depth_node)   │
+             ↓ HTTP POST                  │
+       Depth Anything server              │
+             ↓                            │
+       16-bit PNG, millimeters            │
+             ↓ HTTP                       │
+     ROS 2 client (image_to_depth_node)   │
+             │                            │
+             ▼                            ▼
       sensor_msgs/Image    sensor_msgs/CameraInfo
       (encoding: 16UC1)          ↓
              ↓                   ↓
@@ -182,8 +188,10 @@ When using Depth Anything pipeline, the intended flow is:
 ```
 **Note:**
 - you don't need *HuskyLens 2* to implement this pipeline. Regular [cameras](https://github.com/slgrobotics/robots_bringup/blob/main/Docs/Sensors/Camera.md)
-and even webcams with their ROS2 drivers nodes produce images and *CloudInfo* to feed the pipeline.
+and even webcams with their ROS2 driver nodes produce images and *CameraInfo* to feed the pipeline.
 - you need *CameraInfo*, not just the depth image. The conversion needs the *camera intrinsics fx, fy, cx, cy* to back-project each depth pixel (distance from camera) *(u,v,Z)* into 3D space *XYZ*
+- you can produce *synthetic CameraInfo* derived from camera field of view - use `image_to_3d/fake_camera_info_node.py`
+[node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py).
 - If you also want an *XYZRGB colored point cloud*, *depth_image_proc* has a *PointCloudXyzrgbNode*, which combines depth with the RGB image.
 - If you need to reduce your *CloudPoint2* to a *LaserScan* - follow [this guide](https://github.com/slgrobotics/robots_bringup/blob/main/Docs/Sensors/OAK-D_Lite.md#converting-pointcloud2-to-laserscan).
 Or just use *Depth To Laser Scan Node*
@@ -227,7 +235,7 @@ xxx@yyy:~/husky_ws$ ros2 launch huskylens2_ros2 huskylens2_mcp.launch.py camera_
 # Note: you can use any other ROS2 camera node, make sure to remap topics properly 
 
 # ROS2 node takes image and uses HTTP Server to convert camera image to depth map image:
-xxx@yyy:~/robot_ws$ ros2 launch image_to_3d depth_node.launch.py
+xxx@yyy:~/robot_ws$ ros2 launch image_to_3d image_to_depth_node.launch.py
 
 # ROS2 node to convert depth map image to PointCloud2:
 xxx@yyy:~/robot_ws$ ros2 launch image_to_3d point_cloud_rgb_node.launch.py
