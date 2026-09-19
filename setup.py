@@ -16,8 +16,8 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='sergei',
-    maintainer_email='sergei@example.com',
+    maintainer='Sergei Grichine',
+    maintainer_email='slg@quakemap.com',
     description=(
         'image_to_3d is a ROS 2 package for converting camera images into depth '
         'and derived 3D representations. It provides nodes for image-to-depth '
