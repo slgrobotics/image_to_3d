@@ -6,14 +6,14 @@ depth_node.launch.py - launch the node querying the Depth Anything V2 server for
 Works with the HuskyLens 2 MCP node (launch/huskylens2_mcp.launch.py), or any other node publishing compressed images.
 
 Make sure that the Depth Anything V2 server is running, e.g.:
-  cd ~/husky_ws/src/huskylens2_ros2/depth_anything
+  cd ~/husky_ws/src/image_to_3d/depth_anything
   ... activate your Python 3 virtual environment ...
   ./depth_server.py
 
 Examples:
-  ros2 launch huskylens2_ros2 depth_node.launch.py
+  ros2 launch image_to_3d depth_node.launch.py
 
-  ros2 launch huskylens2_ros2 depth_node.launch.py depth_server:=http://127.0.0.1:5001/depth
+  ros2 launch image_to_3d depth_node.launch.py depth_server:=http://127.0.0.1:5001/depth
 
 """
 
@@ -26,7 +26,7 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    pkg_dir = get_package_share_directory('huskylens2_ros2')
+    pkg_dir = get_package_share_directory('image_to_3d')
     default_config  = os.path.join(pkg_dir, 'config', 'huskylens2.yaml')
 
     # default values here override the YAML file, but can be overridden by launch arguments
@@ -42,7 +42,7 @@ def generate_launch_description():
         description='Path to the ROS 2 parameter YAML file.')
 
     depth_node = Node(
-        package='huskylens2_ros2',
+        package='image_to_3d',
         executable='depth_node',
         name='depth_node',
         output='screen',

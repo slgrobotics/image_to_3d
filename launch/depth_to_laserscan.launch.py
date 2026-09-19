@@ -4,11 +4,11 @@
 depth_to_laserscan.launch.py - launch the node converting depth images to LaserScan messages.
 
 Examples:
-    ros2 launch huskylens2_ros2 depth_to_laserscan.launch.py
+    ros2 launch image_to_3d depth_to_laserscan.launch.py
 
     or
 
-  ros2 launch huskylens2_ros2 depth_to_laserscan.launch.py \
+  ros2 launch image_to_3d depth_to_laserscan.launch.py \
     input_topic:=huskylens/depth/image \
     camera_info_topic:=huskylens/depth/camera_info \
     output_topic:=huskylens/scan \
@@ -32,7 +32,7 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
-    pkg_dir = get_package_share_directory('huskylens2_ros2')
+    pkg_dir = get_package_share_directory('image_to_3d')
     default_config  = os.path.join(pkg_dir, 'config', 'huskylens2.yaml')
 
     input_topic_arg = DeclareLaunchArgument(
@@ -81,7 +81,7 @@ def generate_launch_description():
         description='Path to the ROS 2 parameter YAML file.')
 
     depth_node = Node(
-        package='huskylens2_ros2',
+        package='image_to_3d',
         executable='depth_to_laserscan_node',
         name='depth_to_laserscan_node',
         output='screen',

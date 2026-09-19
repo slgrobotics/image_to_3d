@@ -11,7 +11,7 @@ Install prerequisites:
   sudo apt install ros-${ROS_DISTRO}-image-transport-plugins
 
 Run:
-  ros2 launch huskylens2_ros2 point_cloud_rgb_node.launch.py
+  ros2 launch image_to_3d point_cloud_rgb_node.launch.py
 """
 
 from launch import LaunchDescription
