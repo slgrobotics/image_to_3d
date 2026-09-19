@@ -37,6 +37,9 @@ The *Depth Anything V2 HTTP Server* in the `depth_anything` directory takes an i
 It must be run in an environment with a GPU (CUDA) - normally a Python
 "sandboxed" *virtual environment* with PyTorch installed.
 
+You can run the following test in a *virtual environment*:
+- `tests/test_depth.py`
+
 Refer to [this guide](https://github.com/slgrobotics/image_to_3d/blob/main/depth_anything/README.md) for installation and use.
 
 A ROS2 node or any other program can issue an HTTP POST request to this server
@@ -51,16 +54,17 @@ performs inference, and returns the depth map as a 16-bit PNG image.
                  │ HTTP POST
                  │ image/jpeg or image/png
                  ▼
-    ┌──────────────────────────┐
-    │ Depth Anything V2 server │
-    │                          │
-    │ decode image             │
-    │ preprocess               │
-    │ CUDA inference           │
-    │ resize to input size     │
-    │ meters → uint16 mm       │
-    │ encode PNG               │
-    └────────────┬─────────────┘
+    ┌────────────────────────────┐
+    │ Depth Anything V2 server   │
+    │                            │
+    │ decode image               │
+    │ preprocess                 │
+    │ CUDA inference             │
+    │ resize to input size       │
+    │ meters → uint16 mm         │ 
+    │   & Apply DEPTH_MULTIPLIER │
+    │ encode PNG                 │
+    └────────────┬───────────────┘
                  │
                  │ HTTP response
                  │ image/png
@@ -68,7 +72,7 @@ performs inference, and returns the depth map as a 16-bit PNG image.
           16-bit depth map
 ```
 
-The following tests interact with the server:
+The following tests interact with the server in a client role:
 - `tests/test_depth_server.py`
 - `tests/test_depth_server_gui.py`
 - `tests/test_depth_webcam.py`
@@ -97,6 +101,7 @@ ros2 run image_to_3d depth_node
 ros2 run image_to_3d depth_node --ros-args -p depth_server:=http://127.0.0.1:5001/depth
 ```
 
+Here is how it works when processing *HuskyLens 2* images:
 ```    
      ROS 2 image publishing node
                     │
@@ -217,7 +222,9 @@ Values delivered by *depth_server.py* seem to depend on camera FOV, and need som
 (venv) xxx@yyy:~/robot_ws/src/image_to_3d/depth_anything$ ./depth_server.py
 
 # ROS2 node querying HuskyLens 2 MCP Server for image and detections:
-xxx@yyy:~/robot_ws$ ros2 launch image_to_3d huskylens2_mcp.launch.py camera_module:="wide_angle"
+xxx@yyy:~/husky_ws$ ros2 launch huskylens2_ros2 huskylens2_mcp.launch.py camera_module:="wide_angle"
+
+# Note: you can use any other ROS2 camera node, make sure to remap topics properly 
 
 # ROS2 node takes image and uses HTTP Server to convert camera image to depth map image:
 xxx@yyy:~/robot_ws$ ros2 launch image_to_3d depth_node.launch.py
@@ -226,7 +233,7 @@ xxx@yyy:~/robot_ws$ ros2 launch image_to_3d depth_node.launch.py
 xxx@yyy:~/robot_ws$ ros2 launch image_to_3d point_cloud_rgb_node.launch.py
 ```
 
-The following line in `launch/huskylens2_mcp.launch.py` should match the position of your camera:
+If working with HuskyLens 2, the following line in `launch/huskylens2_mcp.launch.py` should match the position of your camera:
 ```
 '--z', '0.57',    # Z translation in meters (camera height above ground)
 ```
@@ -234,7 +241,7 @@ The following line in `launch/huskylens2_mcp.launch.py` should match the positio
 1. Note some objects and the distance to them (depth dimensions) from the camera; adjust parameter below in `depth_server.py` while observing the scene in RViz2.
 
 ```
-# experimental scale factor for depth values:
+# experimental scale factor for HuskyLens 2 depth values:
 DEPTH_MULTIPLIER = 1.15   # for HuskyLens 2 stock camera module
 # DEPTH_MULTIPLIER = 0.5  # for HuskyLens 2 wide-angle camera module
 ```
@@ -243,6 +250,7 @@ DEPTH_MULTIPLIER = 1.15   # for HuskyLens 2 stock camera module
 note the distance between two objects at the same distance from the camera.
 
 Adjust the `camera_module:="...,..."` values in `huskylens2_mcp_module` (launch, yaml) until that distance matches reality.
+These are FOV values that directly affect calculated values in CameraInfo.
 
 3. Round objects should be round, adjust the second value which is responsible for it.
 
