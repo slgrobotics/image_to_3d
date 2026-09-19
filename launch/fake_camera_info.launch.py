@@ -1,6 +1,38 @@
 #!/usr/bin/env python3
 
-"""Launch the fake CameraInfo generator/synchronizer."""
+"""
+Launch the synthetic CameraInfo generator and image synchronizer.
+
+This launch file starts the image_to_3d fake_camera_info_node, which subscribes
+to a camera image stream and republishes the image together with a synchronized
+CameraInfo message.
+
+Launch arguments:
+    camera_fov:
+        Horizontal and vertical camera field of view in degrees, specified as "HFOV,VFOV".
+
+    input_topic:
+        Input camera image topic.
+
+    output_topic:
+        Republished image topic synchronized with CameraInfo.
+
+    camera_info_topic:
+        Output CameraInfo topic.
+
+    input_type:
+        Input image message type: "raw" or "compressed".
+
+    output_type:
+        Output image message type: "raw" or "compressed".
+
+    frame_id:
+        Optional frame ID override. If empty, the input image frame ID is used.
+
+Launch it:
+    ros2 launch image_to_3d fake_camera_info.launch.py
+
+"""
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument

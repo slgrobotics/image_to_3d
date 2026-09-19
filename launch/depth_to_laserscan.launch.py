@@ -3,22 +3,22 @@
 """
 depth_to_laserscan.launch.py - launch the node converting depth images to LaserScan messages.
 
-Examples:
+Launch it:
     ros2 launch image_to_3d depth_to_laserscan.launch.py
 
-    or
+      or
 
-  ros2 launch image_to_3d depth_to_laserscan.launch.py \
-    input_topic:=huskylens/depth/image \
-    camera_info_topic:=huskylens/depth/camera_info \
-    output_topic:=huskylens/scan \
-    target_frame:=huskylens2_link_optical \
-    num_scan_bins:=160 \
-    min_height:=-0.1 \
-    max_height:=0.1 \
-    range_min:= 0.2 \
-    range_max:=10.0 \
-    scan_time:= 0.1
+    ros2 launch image_to_3d depth_to_laserscan.launch.py \
+        input_topic:=huskylens/depth/image \
+        camera_info_topic:=huskylens/depth/camera_info \
+        output_topic:=huskylens/scan \
+        target_frame:=huskylens2_link_optical \
+        num_scan_bins:=160 \
+        min_height:=-0.1 \
+        max_height:=0.1 \
+        range_min:= 0.2 \
+        range_max:=10.0 \
+        scan_time:= 0.1
 
 """
 

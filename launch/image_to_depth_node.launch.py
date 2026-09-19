@@ -10,7 +10,7 @@ Make sure that the Depth Anything V2 server is running, e.g.:
   ... activate your Python 3 virtual environment ...
   ./depth_server.py
 
-Examples:
+Launch it:
   ros2 launch image_to_3d image_to_depth_node.launch.py
 
   ros2 launch image_to_3d image_to_depth_node.launch.py depth_server:=http://127.0.0.1:5001/depth
