@@ -1,1 +1,37 @@
-{}
+#
+# A configuration file for HuskyLens 2 camera example.
+#
+
+image_to_depth_node:
+  ros__parameters:
+    input_topic:  huskylens/image/compressed
+    output_topic: huskylens/depth/image
+    camera_info_output_topic: huskylens/depth/camera_info  # re-published with same timestamp as depth image
+    depth_server: "http://127.0.0.1:5001/depth"
+    request_timeout: 10.0
+    queue_size: 1
+
+depth_to_laserscan_node:
+  ros__parameters:
+    target_frame: huskylens2_link
+    input_topic:  huskylens/depth/image
+    output_topic: huskylens/scan
+    camera_info_topic: huskylens/depth/camera_info
+    num_scan_bins: 160  # good for 640x480 depth image, 4 depth pixels per scan bin
+    min_height: -0.1
+    max_height: -0.1
+    range_min:   0.2
+    range_max:  10.0
+    scan_time:   0.1
+
+fake_camera_info_node:
+  ros__parameters:
+    camera_fov: "92.0,76.0" 
+    input_topic: camera/image/compressed
+    output_topic: fake_camera/image
+    camera_info_topic: fake_camera/camera_info
+    input_type: compressed
+    output_type: raw
+    frame_id: huskylens2_link_optical
+
+    

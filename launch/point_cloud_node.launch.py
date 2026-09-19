@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 
 """
-point_cloud_node.launch.py - launch the depth -> point cloud conversion node
+point_cloud_node.launch.py -
+    launch the depth -> point cloud conversion node
+    (from a standard ROS2 depth_image_proc package)
 
 Install prerequisites:
-  sudo apt install ros-${ROS_DISTRO}-image-pipeline
 
-Examples:
+    sudo apt install ros-${ROS_DISTRO}-image-pipeline
+
+Launch it:
+
     ros2 launch image_to_3d point_cloud_node.launch.py
+
 """
 
 from launch import LaunchDescription

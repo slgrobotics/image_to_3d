@@ -3,15 +3,16 @@
 """
 point_cloud_rgb_node.launch.py
 
-Decompress the HuskyLens RGB image and generate an XYZRGB point cloud
-from the RGB image and metric depth image.
+    Decompress the HuskyLens RGB image and generate an XYZRGB point cloud
+    from the RGB image and metric depth image.
 
 Install prerequisites:
-  sudo apt install ros-${ROS_DISTRO}-image-pipeline
-  sudo apt install ros-${ROS_DISTRO}-image-transport-plugins
+    sudo apt install ros-${ROS_DISTRO}-image-pipeline
+    sudo apt install ros-${ROS_DISTRO}-image-transport-plugins
 
-Run:
-  ros2 launch image_to_3d point_cloud_rgb_node.launch.py
+Launch it:
+    ros2 launch image_to_3d point_cloud_rgb_node.launch.py
+
 """
 
 from launch import LaunchDescription
