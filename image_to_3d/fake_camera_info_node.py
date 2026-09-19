@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 """Publish synthetic CameraInfo synchronized with an image topic."""
 
 import math
@@ -29,16 +30,24 @@ def parse_fov(value):
     return horizontal_fov, vertical_fov
 
 
+def parse_message_type(value, field_name):
+    normalized = str(value).strip().lower()
+    if normalized not in ('raw', 'compressed'):
+        raise ValueError(f'{field_name} must be either raw or compressed')
+    return normalized == 'compressed'
+
+
 class FakeCameraInfoNode(Node):
 
     def __init__(self):
         super().__init__('fake_camera_info_node')
 
         self.declare_parameter('camera_fov', '92.0,76.0')
-        self.declare_parameter('input_topic', 'huskylens/image/compressed')
+        self.declare_parameter('input_topic', 'camera/image/compressed')
         self.declare_parameter('output_topic', 'fake_camera/image')
         self.declare_parameter('camera_info_topic', 'fake_camera/camera_info')
         self.declare_parameter('input_type', 'compressed')
+        self.declare_parameter('output_type', 'raw')
         self.declare_parameter('frame_id', '')
 
         self._horizontal_fov, self._vertical_fov = parse_fov(
@@ -47,31 +56,39 @@ class FakeCameraInfoNode(Node):
         output_topic = str(self.get_parameter('output_topic').value)
         camera_info_topic = str(
             self.get_parameter('camera_info_topic').value)
-        input_type = str(self.get_parameter('input_type').value).strip().lower()
+        input_type = parse_message_type(
+            self.get_parameter('input_type').value, 'input_type')
+        output_type = parse_message_type(
+            self.get_parameter('output_type').value, 'output_type')
         self._frame_id = str(self.get_parameter('frame_id').value)
 
-        if input_type not in ('raw', 'compressed'):
-            raise ValueError('input_type must be either raw or compressed')
-        self._compressed = input_type == 'compressed'
+        self._input_compressed = input_type
+        self._output_compressed = output_type
 
-        image_type = CompressedImage if self._compressed else Image
-        self._image_pub = self.create_publisher(image_type, output_topic, 10)
+        input_msg_type = CompressedImage if self._input_compressed else Image
+        output_msg_type = CompressedImage if self._output_compressed else Image
+        self._image_pub = self.create_publisher(
+            output_msg_type, output_topic, 10)
+
         self._camera_info_pub = self.create_publisher(
             CameraInfo, camera_info_topic, 10)
         self._bridge = CvBridge()
 
         self.create_subscription(
-            image_type, input_topic, self._on_image, qos_profile_sensor_data)
+            input_msg_type, input_topic, self._on_image,
+            qos_profile_sensor_data)
 
         self.get_logger().info(
-            f'Synchronizing {input_type} images from {input_topic} to '
-            f'{output_topic} with CameraInfo on {camera_info_topic}')
+            f'Synchronizing {"compressed" if self._input_compressed else "raw"} '
+            f'images from {input_topic} to {output_topic} '
+            f'({"compressed" if self._output_compressed else "raw"} output) '
+            f'with CameraInfo on {camera_info_topic}')
         self.get_logger().info(
             f'Camera FOV: {self._horizontal_fov:.3f}°W x '
             f'{self._vertical_fov:.3f}°H')
 
     def _on_image(self, image):
-        if self._compressed:
+        if self._input_compressed:
             try:
                 frame = self._bridge.compressed_imgmsg_to_cv2(
                     image, desired_encoding='passthrough')
@@ -82,8 +99,15 @@ class FakeCameraInfoNode(Node):
                     throttle_duration_sec=5.0)
                 return
         else:
-            width = image.width
-            height = image.height
+            try:
+                frame = self._bridge.imgmsg_to_cv2(
+                    image, desired_encoding='passthrough')
+            except Exception as exc:
+                self.get_logger().warning(
+                    f'Could not convert raw image: {exc}',
+                    throttle_duration_sec=5.0)
+                return
+            height, width = frame.shape[:2]
 
         if width <= 0 or height <= 0:
             self.get_logger().warning(
@@ -94,10 +118,22 @@ class FakeCameraInfoNode(Node):
         frame_id = self._frame_id or image.header.frame_id
         camera_info = self._create_camera_info(width, height, image.header)
         camera_info.header.frame_id = frame_id
-        image.header.frame_id = frame_id
 
-        self._image_pub.publish(image)
+        output_image = self._build_output_image(frame, image.header)
+        output_image.header.frame_id = frame_id
+        self._image_pub.publish(output_image)
         self._camera_info_pub.publish(camera_info)
+
+    def _build_output_image(self, frame, header):
+        output_header = header
+        if self._output_compressed:
+            output_image = self._bridge.cv2_to_compressed_imgmsg(
+                frame, dst_format='jpeg')
+            output_image.header = output_header
+            return output_image
+        output_image = self._bridge.cv2_to_imgmsg(frame, encoding='passthrough')
+        output_image.header = output_header
+        return output_image
 
     def _create_camera_info(self, width, height, header):
         focal_x = (width / 2.0) / math.tan(

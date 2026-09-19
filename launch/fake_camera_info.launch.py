@@ -22,6 +22,9 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'input_type', default_value='compressed',
             description='Input message type: raw or compressed'),
+        DeclareLaunchArgument(
+            'output_type', default_value='raw',
+            description='Output message type: raw or compressed'),
         DeclareLaunchArgument('frame_id', default_value=''),
     ]
 
@@ -34,7 +37,7 @@ def generate_launch_description():
             name: LaunchConfiguration(name)
             for name in (
                 'camera_fov', 'input_topic', 'output_topic',
-                'camera_info_topic', 'input_type', 'frame_id')
+                'camera_info_topic', 'input_type', 'output_type', 'frame_id')
         }],
     )
 
