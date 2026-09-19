@@ -5,6 +5,16 @@ Back to [Main Project Home](https://github.com/slgrobotics/articubot_one/wiki)
 - It provides nodes for image-to-depth estimation and for converting depth images into *PointCloud2* and *LaserScan* messages.
 - It also contains node that translates camera X,Y pixel coordinates to 3D coordinates.
 
+Contents:
+- [Build and run](https://github.com/slgrobotics/image_to_3d#build-and-run)
+- [Depth Anything V2 HTTP Server](https://github.com/slgrobotics/image_to_3d#depth-anything-v2-http-server)
+- [Image to Depth node](https://github.com/slgrobotics/image_to_3d#image-to-depth-node)
+- [Depth To Laser Scan node](https://github.com/slgrobotics/image_to_3d#depth-to-laser-scan-node)
+- [Producing PointCloud2 from Depth topic](https://github.com/slgrobotics/image_to_3d#producing-pointcloud2-from-depth-topic)
+- [Calibrating Pointcloud](https://github.com/slgrobotics/image_to_3d#calibrating-pointcloud)
+
+-----------------------------
+
 ### Build and run
 
 Place this package in your ROS 2 workspace's `src` directory:
@@ -29,8 +39,8 @@ ros2 launch image_to_3d huskylens2.launch.py
 ```
 **Note:**
 - some examples below use *HuskyLens 2* camera for input and related [package](https://github.com/slgrobotics/huskylens2_ros2).
-- you can use any monocular camera as input. If your camera is calibrated (for a specific WxH resolution, like 640x480) your driver node will publish correct CameraInfo
-- if your camera driver node does not publish CameraInfo (or if it doesn't produce desired results) - use `image_to_3d/fake_camera_info_node.py`
+- you can use any monocular camera as input. If your camera is calibrated (for a specific WxH resolution, like 640x480) your driver node will publish correct *CameraInfo*
+- if your camera driver node does not publish *CameraInfo* (or if it doesn't produce desired results) - use `image_to_3d/fake_camera_info_node.py`
 [node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py).
 
 
