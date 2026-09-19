@@ -48,7 +48,8 @@ ros2 launch image_to_3d huskylens2.launch.py
 
 See this [guide](https://github.com/slgrobotics/articubot_one/wiki/Depth-Anything-V2) for information.
 
-The *Depth Anything V2 HTTP Server* in the `depth_anything` directory takes an image and returns a depth map (as a .png image).
+The *Depth Anything V2 HTTP Server* in the `depth_anything` [directory](https://github.com/slgrobotics/image_to_3d/blob/main/depth_anything/README.md)
+takes an image and returns a depth map (as a PNG image).
 
 It must be run in an environment with a GPU (CUDA) - normally a Python
 "sandboxed" *virtual environment* with PyTorch installed.
