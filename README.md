@@ -187,9 +187,9 @@ ros2 run image_to_3d image_to_depth_node --ros-args -p depth_server:=http://127.
 
 Here is how it works when processing *HuskyLens 2* images:
 ```    
-     ROS 2 image publishing node
+     ROS 2 image publishing node (HuskyLens 2 MCP Client)
                     │
-                    │ huskylens/image/compressed topic
+                    │ 'huskylens/image/compressed' topic
                     ▼
      ROS 2 image_to_depth_node -----┐
                                     │ HTTP POST
@@ -199,7 +199,7 @@ Here is how it works when processing *HuskyLens 2* images:
                         └───────────┬──────────────┘
                                     ▼ HTTP response -  16-bit depth map
      ROS 2 image_to_depth_node -----┘
-                 │  `huskylens/depth/image` topic
+                 │  'huskylens/depth/image' topic
                  ▼
         Any ROS2 subscribers
 ```
@@ -210,7 +210,7 @@ For example, this is how an image from [HuskyLens 2](https://github.com/slgrobot
 
 <img width="757" height="567" alt="Screenshot from 2026-09-15 17-08-00" src="https://github.com/user-attachments/assets/866af907-b61e-4dff-a46e-b22270b31044" />
 
-Depth image returned by *Depth Anything V2 server* and published by *image_to_depth_node* as, for example, `huskylens/depth/image`:
+Depth image returned by *Depth Anything V2 server* and published by *image_to_depth_node* as, for example, `camera_3d/depth/image`:
 
 <img width="757" height="567" alt="Screenshot from 2026-09-15 17-07-47" src="https://github.com/user-attachments/assets/bb1fea82-c46f-45af-97d7-a5b0faf03fe5" />
 
