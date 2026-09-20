@@ -8,8 +8,8 @@ When the mouse moves, we compute the min and max depth values in the local 50x50
 then normalize just that neighborhood to the full 0..255 grayscale range to amplify
 relative differences in the local depth field.
 
-cd /home/sergei/husky_ws/src/image_to_3d
-python3 tests/magnify_depth.py
+cd ~/robot_ws/src/image_to_3d/tests
+python3 magnify_depth.py
 
 """
 

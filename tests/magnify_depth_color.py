@@ -5,10 +5,10 @@ Display a depth image and magnify a local 50x50 area under the mouse using color
 
 The main image is shown as grayscale, without color coding.
 When the mouse moves, we compute the min and max depth values in the local 50x50 neighborhood, 
-then normalize just that neighborhood to the full 0..255 grayscale range to amplify
+then normalize just that neighborhood to the full 0..255 grayscale or color range to amplify
 relative differences in the local depth field.
 
-cd /home/sergei/husky_ws/src/image_to_3d/tests
+cd ~/robot_ws/src/image_to_3d/tests
 python3 magnify_depth_color.py
 python3 magnify_depth_color.py --color
 python3 magnify_depth_color.py --color --colormap turbo
