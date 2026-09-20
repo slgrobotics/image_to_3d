@@ -8,6 +8,7 @@ Back to [Main Project Home](https://github.com/slgrobotics/articubot_one/wiki)
 **Note:** some examples and images below mention *[HuskyLens 2](https://www.amazon.com/dp/B0H1Q77BTR)* camera and refer to [huskylens2_ros2](https://github.com/slgrobotics/huskylens2_ros2) package.
 
 Contents:
+- [Camera setup](https://github.com/slgrobotics/image_to_3d#camera-setup)
 - [Build and run](https://github.com/slgrobotics/image_to_3d#build-and-run)
 - [Depth Anything V2 HTTP Server](https://github.com/slgrobotics/image_to_3d#depth-anything-v2-http-server)
 - [Image to Depth node](https://github.com/slgrobotics/image_to_3d#image-to-depth-node)
@@ -16,6 +17,58 @@ Contents:
 - [Calibrating Pointcloud](https://github.com/slgrobotics/image_to_3d#calibrating-pointcloud)
 
 -----------------------------
+
+### Camera setup
+
+For a *Ubuntu 24.04* + *ROS 2 Jazzy* setup, you can start with [usb_cam](https://github.com/ros-drivers/usb_cam). 
+It is a maintained ROS 2 driver for V4L cameras and works with typical  `/dev/video0` webcams.
+
+It publishes the usual ROS camera topics and supports configuration of resolution, frame rate, pixel format, device,
+and camera [calibration](https://docs.ros.org/en/kilted/p/camera_calibration/doc/tutorial_mono.html).
+
+Install it:
+```
+sudo apt install ros-${ROS_DISTRO}-usb-cam
+```
+
+Run it:
+```
+ros2 run usb_cam usb_cam_node_exe --ros-args \
+    -r __ns:=/camera \
+    -p framerate:=10.0
+```
+This is how RQT shows camera topics:
+
+<img alt="RQT shows webcam topics" src="https://github.com/user-attachments/assets/a71978de-6a35-4991-985f-3bedea5dc9b6" />
+
+**Note:**
+- use RQT Viewer plugin to confirm that both *raw* and *compressed* topics are showing up properly
+- the `-r __ns:=/camera` (the node namespace) becomes a prefix for all its topics
+- the */camera/image_raw/CompressedDepth* topic is not really published for monocular webcams
+
+### Fake *CameraInfo* node
+
+The [fake_camera_info_node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py)
+node is intended for cameras or image sources that do not provide their own
+*CameraInfo*, allowing the image stream to be used by ROS 2 components that
+require camera intrinsics, such as depth-image projection and 3D perception tools.
+
+This node subscribes to a raw or compressed camera image, determines the image
+dimensions, and republishes the image together with a synchronized CameraInfo
+message.
+
+You don't need to calibrate your camera - just figure out its actual horizontal and vertical
+fields of view (*HFOV* and *VFOV*) in degrees. These could be different when using different resolution modes.
+
+Launch it using a sample [launch file](https://github.com/slgrobotics/image_to_3d/blob/main/launch/fake_camera_info.launch.py):
+```
+ros2 launch image_to_3d fake_camera_info.launch.py camera_fov:=92.0,76.0
+```
+
+**Note:**
+- The generated CameraInfo is an approximation based on the supplied field of view.
+- It does not replace a proper intrinsic camera [calibration](https://docs.ros.org/en/kilted/p/camera_calibration/doc/tutorial_mono.html),
+particularly for cameras with significant lens distortion.
 
 ### Build and run
 
