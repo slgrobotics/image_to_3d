@@ -73,10 +73,14 @@ This is how RQT shows camera topics:
 <img alt="RQT shows webcam topics" src="https://github.com/user-attachments/assets/a71978de-6a35-4991-985f-3bedea5dc9b6" />
 
 > **Note:**
-> - use RQT Viewer plugin to confirm that both *raw* and *compressed* topics are showing up properly
 > - the `-r __ns:=/camera` (the node namespace) becomes a prefix for all its topics
 > - the */camera/image_raw/compressedDepth* topic is not really published for monocular webcams
 > - the *framerate* does not have to be higher than what the *Depth Anything V2 HTTP Server* can process
+> - use RQT Viewer plugin to confirm that both *raw* and *compressed* topics are showing up properly. You can also use:
+> ```
+> ros2 run image_view image_view --ros-args -r image:=/camera/image_raw -p image_transport:=compressed
+> ```
+> - this is how to use *[compressed transport](https://github.com/slgrobotics/robots_bringup/blob/main/Docs/Sensors/Camera.md#using-compressed-transport)*
 
 ### Fake *CameraInfo* node
 
