@@ -36,13 +36,13 @@ class ImageToDepthNode(Node):
         self.get_logger().info('Starting image_to_depth_node')
 
         self.declare_parameter(
-            'input_topic', 'huskylens/image/compressed')
+            'input_topic', 'camera_3d/image/compressed')
         self.declare_parameter(
-            'camera_info_topic', 'huskylens/camera_info')
+            'camera_info_topic', 'camera_3d/camera_info')
         self.declare_parameter(
-            'output_topic', 'huskylens/depth/image')
+            'output_topic', 'camera_3d/depth/image')
         self.declare_parameter(
-            'camera_info_output_topic', 'huskylens/depth/camera_info')
+            'camera_info_output_topic', 'camera_3d/depth/camera_info')
         self.declare_parameter(
             'depth_server', 'http://127.0.0.1:5001/depth')
         self.declare_parameter('request_timeout', 5.0)

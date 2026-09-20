@@ -9,9 +9,9 @@ Launch it:
       or
 
     ros2 launch image_to_3d depth_to_laserscan.launch.py \
-        input_topic:=huskylens/depth/image \
-        camera_info_topic:=huskylens/depth/camera_info \
-        output_topic:=huskylens/scan \
+        input_topic:=camera_3d/depth/image \
+        camera_info_topic:=camera_3d/depth/camera_info \
+        output_topic:=camera_3d/scan \
         target_frame:=huskylens2_link_optical \
         num_scan_bins:=160 \
         min_height:=-0.1 \
@@ -36,11 +36,11 @@ def generate_launch_description():
     default_config  = os.path.join(pkg_dir, 'config', 'huskylens2.yaml')
 
     input_topic_arg = DeclareLaunchArgument(
-        'input_topic', default_value='huskylens/depth/image',
+        'input_topic', default_value='camera_3d/depth/image',
         description='Depth image topic')
 
     camera_info_topic_arg = DeclareLaunchArgument(
-        'camera_info_topic', default_value='huskylens/depth/camera_info',
+        'camera_info_topic', default_value='camera_3d/depth/camera_info',
         description='CameraInfo topic')
 
     num_scan_bins_arg = DeclareLaunchArgument(
@@ -48,7 +48,7 @@ def generate_launch_description():
         description='Number of LaserScan bins (must be at least 10)')
 
     output_topic_arg = DeclareLaunchArgument(
-        'output_topic', default_value='huskylens/scan',
+        'output_topic', default_value='camera_3d/scan',
         description='LaserScan output topic')
 
     target_frame_arg = DeclareLaunchArgument(

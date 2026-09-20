@@ -92,8 +92,8 @@ class FakeCameraInfoNode(Node):
 
         self.declare_parameter('camera_fov', '92.0,76.0')
         self.declare_parameter('input_topic', 'camera/image/compressed')
-        self.declare_parameter('output_topic', 'fake_camera/image')
-        self.declare_parameter('camera_info_topic', 'fake_camera/camera_info')
+        self.declare_parameter('output_topic', 'camera_3d/image')
+        self.declare_parameter('camera_info_topic', 'camera_3d/camera_info')
         self.declare_parameter('input_type', 'compressed')
         self.declare_parameter('output_type', 'raw')
         self.declare_parameter('frame_id', '')

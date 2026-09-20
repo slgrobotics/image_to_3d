@@ -3,7 +3,7 @@
 """
 point_cloud_rgb_node.launch.py
 
-    Decompress the HuskyLens RGB image and generate an XYZRGB point cloud
+    Decompress the HuskyLens (or other camera) RGB image and generate an XYZRGB point cloud
     from the RGB image and metric depth image.
 
 Install prerequisites:
@@ -23,55 +23,55 @@ def generate_launch_description():
     return LaunchDescription([
 
         # ------------------------------------------------------------------
-        # Decompress RGB image:
+        # Decompress camera's RGB image:
         #
-        #   /huskylens/image/compressed
+        #   /camera/image/compressed
         #       sensor_msgs/msg/CompressedImage
         #
         #              ↓
         #
-        #   /huskylens/image/raw
+        #   /camera_3d/image/raw
         #       sensor_msgs/msg/Image
         #
         # image_transport operates on base topic names. The "compressed"
         # input transport therefore subscribes to:
         #
-        #   /huskylens/image/compressed
+        #   /camera/image/compressed
         #
         # while the "raw" output transport publishes:
         #
-        #   /huskylens/image/raw
+        #   /camera_3d/image/raw
         # ------------------------------------------------------------------
         Node(
             package='image_transport',
             executable='republish',
-            name='huskylens_rgb_decompress',
+            name='camera_rgb_decompress',
             output='screen',
             parameters=[{
                 'in_transport': 'compressed',
                 'out_transport': 'raw',
             }],
             remappings=[
-                ('in/compressed', '/huskylens/image/compressed'),
-                ('out', '/huskylens/image_decompressed'),
+                ('in/compressed', '/camera/image/compressed'),
+                ('out', '/camera_3d/image_decompressed'),
             ],
         ),
         # ------------------------------------------------------------------
         # RGB + depth → XYZRGB point cloud
         #
         # RGB:
-        #   /huskylens/image/raw
+        #   /camera_3d/image/raw
         #
         # Depth:
-        #   /huskylens/depth/image
+        #   /camera_3d/depth/image
         #       encoding: 16UC1
         #       units: millimeters
         #
         # Camera calibration:
-        #   /huskylens/depth/camera_info
+        #   /camera_3d/depth/camera_info
         #
         # Output:
-        #   /huskylens/depth/points
+        #   /camera_3d/depth/points
         #       sensor_msgs/msg/PointCloud2
         # ------------------------------------------------------------------
         Node(
@@ -82,19 +82,19 @@ def generate_launch_description():
             remappings=[
                 (
                     'rgb/image_rect_color',
-                    '/huskylens/image_decompressed'
+                    '/camera_3d/image_decompressed'
                 ),
                 (
                     'rgb/camera_info',
-                    '/huskylens/depth/camera_info'
+                    '/camera_3d/depth/camera_info'
                 ),
                 (
                     'depth_registered/image_rect',
-                    '/huskylens/depth/image'
+                    '/camera_3d/depth/image'
                 ),
                 (
                     'points',
-                    '/huskylens/depth/points'
+                    '/camera_3d/depth/points'
                 ),
             ],
         ),

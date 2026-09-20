@@ -31,7 +31,14 @@ Launch arguments:
 
 Launch it:
     ros2 launch image_to_3d fake_camera_info.launch.py
-
+      or
+    ros2 launch image_to_3d fake_camera_info.launch.py camera_fov:=92.0,76.0 \
+        input_topic:=camera/image/compressed \
+        output_topic:=camera_3d/image \
+        camera_info_topic:=camera_3d/camera_info \
+        input_type:=compressed \
+        output_type:=raw \
+        frame_id:=fake_camera_link
 """
 
 from launch import LaunchDescription
@@ -46,11 +53,11 @@ def generate_launch_description():
             'camera_fov', default_value='92.0,76.0',
             description='Camera FOV in degrees as HFOV,VFOV'),
         DeclareLaunchArgument(
-            'input_topic', default_value='huskylens/image/compressed'),
+            'input_topic', default_value='camera/image/compressed'),
         DeclareLaunchArgument(
-            'output_topic', default_value='fake_camera/image'),
+            'output_topic', default_value='camera_3d/image'),
         DeclareLaunchArgument(
-            'camera_info_topic', default_value='fake_camera/camera_info'),
+            'camera_info_topic', default_value='camera_3d/camera_info'),
         DeclareLaunchArgument(
             'input_type', default_value='compressed',
             description='Input message type: raw or compressed'),
