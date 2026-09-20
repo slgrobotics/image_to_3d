@@ -7,9 +7,9 @@ Back to [Main Project Home](https://github.com/slgrobotics/articubot_one/wiki)
 - It uses *Depth Anything V2* AI model. A machine with Nvidia Geforce RTX 3060 or better is required (somewhere on LAN).
 
 Contents:
+- [Build and run](https://github.com/slgrobotics/image_to_3d#build-and-run)
 - [Camera setup](https://github.com/slgrobotics/image_to_3d#camera-setup)
 - [Fake CameraInfo node](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#fake-camerainfo-node)
-- [Build and run](https://github.com/slgrobotics/image_to_3d#build-and-run)
 - [Depth Anything V2 HTTP Server](https://github.com/slgrobotics/image_to_3d#depth-anything-v2-http-server)
 - [Image to Depth node](https://github.com/slgrobotics/image_to_3d#image-to-depth-node)
 - [Depth To Laser Scan node](https://github.com/slgrobotics/image_to_3d#depth-to-laser-scan-node)
@@ -17,6 +17,35 @@ Contents:
 - [Calibrating Pointcloud](https://github.com/slgrobotics/image_to_3d#calibrating-pointcloud)
 
 -----------------------------
+
+### Build and run
+
+> Your workstation is likely the best to install this package. Camera and robot stack (Nav2 etc.) can run anywhere on the LAN.
+
+Place this package in your ROS 2 workspace's `src` directory:
+```
+mkdir -p ~/robot_ws/src
+cd ~/robot_ws/src
+git clone https://github.com/slgrobotics/image_to_3d.git
+```
+
+> **Check out** *~/robot_ws/src/image_to_3d/tests* directory
+
+From the workspace root, with your ROS 2 environment sourced:
+```bash
+cd ~/robot_ws
+
+colcon build
+  or
+colcon build --packages-select image_to_3d --symlink-install
+```
+Now you can run specific nodes as required.
+
+> **Note:**
+> - some examples below use *HuskyLens 2* camera for input and related [package](https://github.com/slgrobotics/huskylens2_ros2).
+> - you can use any monocular camera as input. If your camera is calibrated (for a specific WxH resolution, like 640x480) your driver node will publish correct *CameraInfo*
+> - if your camera driver node does not publish *CameraInfo* (or if it doesn't produce desired results) - use `image_to_3d/fake_camera_info_node.py`
+> [node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py).
 
 ### Camera setup
 
@@ -46,7 +75,8 @@ This is how RQT shows camera topics:
 > **Note:**
 > - use RQT Viewer plugin to confirm that both *raw* and *compressed* topics are showing up properly
 > - the `-r __ns:=/camera` (the node namespace) becomes a prefix for all its topics
-> - the */camera/image_raw/CompressedDepth* topic is not really published for monocular webcams
+> - the */camera/image_raw/compressedDepth* topic is not really published for monocular webcams
+> - the *framerate* does not have to be higher than what the *Depth Anything V2 HTTP Server* can process
 
 ### Fake *CameraInfo* node
 
@@ -59,47 +89,20 @@ This node subscribes to a raw or compressed camera image, determines the image
 dimensions, and republishes the image together with a synchronized CameraInfo
 message.
 
-You don't need to calibrate your camera - just figure out its actual horizontal and vertical
+In most cases you don't need to calibrate your camera - just figure out its actual horizontal and vertical
 fields of view (*HFOV* and *VFOV*) in degrees. These could be different when using different resolution modes.
 
 Launch it using a sample [launch file](https://github.com/slgrobotics/image_to_3d/blob/main/launch/fake_camera_info.launch.py):
 ```
+cd ~/robot_ws
+source install/setup.bash
 ros2 launch image_to_3d fake_camera_info.launch.py camera_fov:=92.0,76.0
 ```
 
 > **Note:**
-> - The generated CameraInfo is an approximation based on the supplied field of view.
+> - The generated *CameraInfo* is an approximation based on the supplied field of view.
 > - It does not replace a proper intrinsic camera [calibration](https://docs.ros.org/en/kilted/p/camera_calibration/doc/tutorial_mono.html),
 > particularly for cameras with significant lens distortion.
-
-### Build and run
-
-Place this package in your ROS 2 workspace's `src` directory:
-```
-mkdir -p ~/robot_ws/src
-cd ~/robot_ws/src
-git clone https://github.com/slgrobotics/image_to_3d.git
-```
-
-> **Check out** *~/robot_ws/src/image_to_3d/tests* directory
-
-From the workspace root, with your ROS 2 environment sourced:
-```bash
-cd ~/robot_ws
-
-colcon build
-  or
-colcon build --packages-select image_to_3d --symlink-install
-
-source install/setup.bash
-ros2 launch image_to_3d huskylens2.launch.py
-```
-> **Note:**
-> - some examples below use *HuskyLens 2* camera for input and related [package](https://github.com/slgrobotics/huskylens2_ros2).
-> - you can use any monocular camera as input. If your camera is calibrated (for a specific WxH resolution, like 640x480) your driver node will publish correct *CameraInfo*
-> - if your camera driver node does not publish *CameraInfo* (or if it doesn't produce desired results) - use `image_to_3d/fake_camera_info_node.py`
-> [node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py).
-
 
 ### Depth Anything V2 HTTP Server
 
@@ -172,6 +175,9 @@ Make sure that the Depth Anything V2 server is running, e.g.:
 
 Run it (on the same machine as *Depth Anything V2 server* to minimize image traffic):
 ```
+cd ~/robot_ws
+source install/setup.bash
+
 ros2 run image_to_3d image_to_depth_node
 
   or
@@ -216,6 +222,8 @@ and groups them into uniformly spaced angular scan bins.
 Each scan bin reports the range to the nearest valid depth sample within that angular interval.
 
 ```
+cd ~/robot_ws
+source install/setup.bash
 ros2 run image_to_3d depth_to_laserscan_node
 ```
 
@@ -270,6 +278,8 @@ When using Depth Anything pipeline, the intended flow is:
 
 For HuskyLens 2 run conversion as follows:
 ```
+cd ~/robot_ws
+source install/setup.bash
 ros2 launch image_to_3d point_cloud_node.launch.py
 ```
 
@@ -281,6 +291,8 @@ ros2 launch image_to_3d point_cloud_node.launch.py
 
 And, with *PointCloudXyzrgbNode*:
 ```
+cd ~/robot_ws
+source install/setup.bash
 ros2 launch image_to_3d point_cloud_rgb_node.launch.py
 ```
 
@@ -304,7 +316,11 @@ Values delivered by *depth_server.py* seem to depend on camera FOV, and need som
 # ROS2 node querying HuskyLens 2 MCP Server for image and detections:
 xxx@yyy:~/husky_ws$ ros2 launch huskylens2_ros2 huskylens2_mcp.launch.py camera_module:="wide_angle"
 
-# Note: you can use any other ROS2 camera node, make sure to remap topics properly 
+# Note: you can use any other ROS2 camera node, make sure to remap topics properly
+
+# always source the package:
+cd ~/robot_ws
+source install/setup.bash
 
 # ROS2 node takes image and uses HTTP Server to convert camera image to depth map image:
 xxx@yyy:~/robot_ws$ ros2 launch image_to_3d image_to_depth_node.launch.py
