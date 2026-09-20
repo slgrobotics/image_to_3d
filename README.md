@@ -4,11 +4,11 @@ Back to [Main Project Home](https://github.com/slgrobotics/articubot_one/wiki)
 **image_to_3d** is a ROS 2 package for converting monocular camera images into depth and derived 3D representations.
 - It provides nodes for image-to-depth estimation and for converting depth images into *PointCloud2* and *LaserScan* messages.
 - It also contains node that translates camera X,Y pixel coordinates to 3D coordinates.
-
-**Note:** some examples and images below mention *[HuskyLens 2](https://www.amazon.com/dp/B0H1Q77BTR)* camera and refer to [huskylens2_ros2](https://github.com/slgrobotics/huskylens2_ros2) package.
+- It uses *Depth Anything V2* AI model. A machine with Nvidia Geforce RTX 3060 or better is required (somewhere on LAN).
 
 Contents:
 - [Camera setup](https://github.com/slgrobotics/image_to_3d#camera-setup)
+- [Fake CameraInfo node](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#fake-camerainfo-node)
 - [Build and run](https://github.com/slgrobotics/image_to_3d#build-and-run)
 - [Depth Anything V2 HTTP Server](https://github.com/slgrobotics/image_to_3d#depth-anything-v2-http-server)
 - [Image to Depth node](https://github.com/slgrobotics/image_to_3d#image-to-depth-node)
@@ -19,6 +19,8 @@ Contents:
 -----------------------------
 
 ### Camera setup
+
+> **Note:** some examples and images below mention *[HuskyLens 2](https://www.amazon.com/dp/B0H1Q77BTR)* camera and refer to [huskylens2_ros2](https://github.com/slgrobotics/huskylens2_ros2) package.
 
 For a *Ubuntu 24.04* + *ROS 2 Jazzy* setup, you can start with [usb_cam](https://github.com/ros-drivers/usb_cam). 
 It is a maintained ROS 2 driver for V4L cameras and works with typical  `/dev/video0` webcams.
@@ -41,10 +43,10 @@ This is how RQT shows camera topics:
 
 <img alt="RQT shows webcam topics" src="https://github.com/user-attachments/assets/a71978de-6a35-4991-985f-3bedea5dc9b6" />
 
-**Note:**
-- use RQT Viewer plugin to confirm that both *raw* and *compressed* topics are showing up properly
-- the `-r __ns:=/camera` (the node namespace) becomes a prefix for all its topics
-- the */camera/image_raw/CompressedDepth* topic is not really published for monocular webcams
+> **Note:**
+> - use RQT Viewer plugin to confirm that both *raw* and *compressed* topics are showing up properly
+> - the `-r __ns:=/camera` (the node namespace) becomes a prefix for all its topics
+> - the */camera/image_raw/CompressedDepth* topic is not really published for monocular webcams
 
 ### Fake *CameraInfo* node
 
@@ -65,10 +67,10 @@ Launch it using a sample [launch file](https://github.com/slgrobotics/image_to_3
 ros2 launch image_to_3d fake_camera_info.launch.py camera_fov:=92.0,76.0
 ```
 
-**Note:**
-- The generated CameraInfo is an approximation based on the supplied field of view.
-- It does not replace a proper intrinsic camera [calibration](https://docs.ros.org/en/kilted/p/camera_calibration/doc/tutorial_mono.html),
-particularly for cameras with significant lens distortion.
+> **Note:**
+> - The generated CameraInfo is an approximation based on the supplied field of view.
+> - It does not replace a proper intrinsic camera [calibration](https://docs.ros.org/en/kilted/p/camera_calibration/doc/tutorial_mono.html),
+> particularly for cameras with significant lens distortion.
 
 ### Build and run
 
@@ -92,11 +94,11 @@ colcon build --packages-select image_to_3d --symlink-install
 source install/setup.bash
 ros2 launch image_to_3d huskylens2.launch.py
 ```
-**Note:**
-- some examples below use *HuskyLens 2* camera for input and related [package](https://github.com/slgrobotics/huskylens2_ros2).
-- you can use any monocular camera as input. If your camera is calibrated (for a specific WxH resolution, like 640x480) your driver node will publish correct *CameraInfo*
-- if your camera driver node does not publish *CameraInfo* (or if it doesn't produce desired results) - use `image_to_3d/fake_camera_info_node.py`
-[node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py).
+> **Note:**
+> - some examples below use *HuskyLens 2* camera for input and related [package](https://github.com/slgrobotics/huskylens2_ros2).
+> - you can use any monocular camera as input. If your camera is calibrated (for a specific WxH resolution, like 640x480) your driver node will publish correct *CameraInfo*
+> - if your camera driver node does not publish *CameraInfo* (or if it doesn't produce desired results) - use `image_to_3d/fake_camera_info_node.py`
+> [node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py).
 
 
 ### Depth Anything V2 HTTP Server
@@ -109,7 +111,9 @@ takes an image and returns a depth map (as a PNG image).
 It must be run in an environment with a GPU (CUDA) - normally a Python
 "sandboxed" *virtual environment* with PyTorch installed.
 
-> A machine with *Nvidia Geforce RTX 3060* or better is required.
+> **Note:**
+> - A machine with *Nvidia Geforce RTX 3060* or better is required.
+> - You can run either *indoors* or *outdoors* model in a single server instance
 
 You can run the following test in a *virtual environment*:
 - `tests/test_depth.py`
@@ -254,15 +258,15 @@ When using Depth Anything pipeline, the intended flow is:
              ▼
       sensor_msgs/PointCloud2
 ```
-**Note:**
-- you don't need *HuskyLens 2* to implement this pipeline. Regular [cameras](https://github.com/slgrobotics/robots_bringup/blob/main/Docs/Sensors/Camera.md)
-and even webcams with their ROS2 driver nodes produce images and *CameraInfo* to feed the pipeline.
-- you need *CameraInfo*, not just the depth image. The conversion needs the *camera intrinsics fx, fy, cx, cy* to back-project each depth pixel (distance from camera) *(u,v,Z)* into 3D space *XYZ*
-- you can produce *synthetic CameraInfo* derived from camera field of view - use `image_to_3d/fake_camera_info_node.py`
-[node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py).
-- If you also want an *XYZRGB colored point cloud*, *depth_image_proc* has a *PointCloudXyzrgbNode*, which combines depth with the RGB image.
-- If you need to reduce your *CloudPoint2* to a *LaserScan* - follow [this guide](https://github.com/slgrobotics/robots_bringup/blob/main/Docs/Sensors/OAK-D_Lite.md#converting-pointcloud2-to-laserscan).
-Or just use *Depth To Laser Scan Node*
+> **Note:**
+> - you don't need *HuskyLens 2* to implement this pipeline. Regular [cameras](https://github.com/slgrobotics/robots_bringup/blob/main/Docs/Sensors/Camera.md)
+> and even webcams with their ROS2 driver nodes produce images and *CameraInfo* to feed the pipeline.
+> - you need *CameraInfo*, not just the depth image. The conversion needs the *camera intrinsics fx, fy, cx, cy* to back-project each depth pixel (distance from camera) *(u,v,Z)* into 3D space *XYZ*
+> - you can produce *synthetic CameraInfo* derived from camera field of view - use `image_to_3d/fake_camera_info_node.py`
+> [node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py).
+> - If you also want an *XYZRGB colored point cloud*, *depth_image_proc* has a *PointCloudXyzrgbNode*, which combines depth with the RGB image.
+> - If you need to reduce your *CloudPoint2* to a *LaserScan* - follow [this guide](https://github.com/slgrobotics/robots_bringup/blob/main/Docs/Sensors/OAK-D_Lite.md#converting-pointcloud2-to-laserscan).
+> Or just use *Depth To Laser Scan Node*
 
 For HuskyLens 2 run conversion as follows:
 ```
