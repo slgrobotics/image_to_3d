@@ -199,7 +199,7 @@ Here is how it works when processing *HuskyLens 2* images:
                         └───────────┬──────────────┘
                                     ▼ HTTP response -  16-bit depth map
      ROS 2 image_to_depth_node -----┘
-                 │  'huskylens/depth/image' topic
+                 │  'camera_3d/depth/image' topic
                  ▼
         Any ROS2 subscribers
 ```
