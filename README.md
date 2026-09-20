@@ -1,9 +1,11 @@
 Back to [Main Project Home](https://github.com/slgrobotics/articubot_one/wiki)
 
-## Image to 3d ROS2 Package
-**image_to_3d** is a ROS 2 package for converting camera images into depth and derived 3D representations.
+## Image to 3D ROS2 Package
+**image_to_3d** is a ROS 2 package for converting monocular camera images into depth and derived 3D representations.
 - It provides nodes for image-to-depth estimation and for converting depth images into *PointCloud2* and *LaserScan* messages.
 - It also contains node that translates camera X,Y pixel coordinates to 3D coordinates.
+
+**Note:** some examples and images below mention *[HuskyLens 2](https://www.amazon.com/dp/B0H1Q77BTR)* camera and refer to [huskylens2_ros2](https://github.com/slgrobotics/huskylens2_ros2) package.
 
 Contents:
 - [Build and run](https://github.com/slgrobotics/image_to_3d#build-and-run)
@@ -53,6 +55,8 @@ takes an image and returns a depth map (as a PNG image).
 
 It must be run in an environment with a GPU (CUDA) - normally a Python
 "sandboxed" *virtual environment* with PyTorch installed.
+
+> A machine with *Nvidia Geforce RTX 3060* or better is required.
 
 You can run the following test in a *virtual environment*:
 - `tests/test_depth.py`
