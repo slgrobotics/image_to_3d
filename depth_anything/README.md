@@ -1,6 +1,10 @@
 
 ## Running HTTP Depth Server 
 
+> A machine with **Nvidia Geforce RTX 3060** or better is required.
+
+> Clients (including ROS nodes) can be anywhere on the LAN
+
 Install *Python virtual environment*:
 
 ```
