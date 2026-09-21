@@ -90,6 +90,8 @@ class FakeCameraInfoNode(Node):
     def __init__(self):
         super().__init__('fake_camera_info_node')
 
+        self.get_logger().info('Starting fake_camera_info_node')
+
         self.declare_parameter('camera_fov', '92.0,76.0')
         self.declare_parameter('input_topic', 'camera/image/compressed')
         self.declare_parameter('output_topic', 'camera_3d/image')
@@ -127,13 +129,13 @@ class FakeCameraInfoNode(Node):
             qos_profile_sensor_data)
 
         self.get_logger().info(
-            f'Synchronizing {"compressed" if self._input_compressed else "raw"} '
-            f'images from {input_topic} to {output_topic} '
-            f'({"compressed" if self._output_compressed else "raw"} output) '
-            f'with CameraInfo on {camera_info_topic}')
-        self.get_logger().info(
             f'Camera FOV: {self._horizontal_fov:.3f}°W x '
             f'{self._vertical_fov:.3f}°H')
+        self.get_logger().info(
+            f'Input:  {input_topic}  transport: {"compressed" if self._input_compressed else "raw"}')
+        self.get_logger().info(
+            f'Output: {output_topic}  transport: {"compressed" if self._output_compressed else "raw"}  '
+            f'with CameraInfo on {camera_info_topic}')
 
     def _on_image(self, image):
         if self._input_compressed:
@@ -226,7 +228,8 @@ def main(args=None):
     finally:
         if node is not None:
             node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
