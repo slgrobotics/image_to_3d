@@ -41,15 +41,20 @@ colcon build --packages-select image_to_3d --symlink-install
 ```
 Now you can run specific nodes as required.
 
-> **Note:**
-> - some examples below use *HuskyLens 2* camera for input and related [package](https://github.com/slgrobotics/huskylens2_ros2).
-> - you can use any monocular camera as input. If your camera is calibrated (for a specific WxH resolution, like 640x480) your driver node will publish correct *CameraInfo*
-> - if your camera driver node does not publish *CameraInfo* (or if it doesn't produce desired results) - use `image_to_3d/fake_camera_info_node.py`
+> **Note:** if your camera driver node does not publish *CameraInfo* (or if it doesn't produce desired results) - use `image_to_3d/fake_camera_info_node.py`
 > [node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py).
 
 ### Camera setup
 
-> **Note:** some examples and images below mention *[HuskyLens 2](https://www.amazon.com/dp/B0H1Q77BTR)* camera and refer to [huskylens2_ros2](https://github.com/slgrobotics/huskylens2_ros2) package.
+> **Note:**
+> - some examples and images below mention *[HuskyLens 2](https://www.amazon.com/dp/B0H1Q77BTR)* camera and refer to [huskylens2_ros2](https://github.com/slgrobotics/huskylens2_ros2) package.
+> - you can use **any monocular camera** as input. If your camera is calibrated (for a specific WxH resolution, like 640x480) your driver node will publish correct *CameraInfo*
+> - a *native* Raspberry Pi *Arducam* with this [ROS2 driver](https://github.com/slgrobotics/robots_bringup/blob/main/Docs/Sensors/Camera.md#ros2-camera-publisher)
+> is available with regular or a "*fish eye*" lens. It works in 600x800 (native) and 640x480 (cropped) modes. It publishes:
+>   - `/camera/camera_info`
+>   - `/camera/image_raw`
+>   - `/camera/image_raw/compressed`
+> - all examples in this package default to topic names above. Use topic remapping or relays if yours are different.
 
 For a *Ubuntu 24.04* + *ROS 2 Jazzy* setup, you can start with [usb_cam](https://github.com/ros-drivers/usb_cam). 
 It is a maintained ROS 2 driver for V4L cameras and works with typical  `/dev/video0` webcams.
