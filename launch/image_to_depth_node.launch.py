@@ -57,6 +57,7 @@ def generate_launch_description():
     # If this package is launched without corresponding robot's URDF and TF tree,
     #  then we need to publish a static transform from the camera optical frame to the map frame
     #  for RViz2 visualization. The following two static transform publishers are for that purpose.
+    # See https://github.com/slgrobotics/huskylens2_ros2/blob/main/README.md#the-optical-coordinate-system-for-cameras-and-sensors
 
     # static transform publisher "map->huskylens2_link" for RViz2:
     tf_camera_to_map = Node(package = "tf2_ros", 
