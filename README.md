@@ -41,9 +41,6 @@ colcon build --packages-select image_to_3d --symlink-install
 ```
 Now you can run specific nodes as required.
 
-> **Note:** if your camera driver node does not publish *CameraInfo* (or if it doesn't produce desired results) - use `image_to_3d/fake_camera_info_node.py`
-> [node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py).
-
 ### Camera setup
 
 > **Note:**
@@ -55,6 +52,12 @@ Now you can run specific nodes as required.
 >   - `/camera/image_raw`
 >   - `/camera/image_raw/compressed`
 > - all examples in this package default to topic names above. Use topic remapping or relays if yours are different.
+
+> **Tip:**
+> - if your camera driver node does not publish *CameraInfo* (or if it doesn't produce desired results) - use `image_to_3d/fake_camera_info_node.py`
+> [node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py).
+> - when running camera node without proper calibration you may want to remap its topic as follows:
+>   - `ros2 run camera_ros camera_node --ros-args -p FrameDurationLimits:="[200000,200000]" -r camera/camera_info:=camera/camera_info_bad`
 
 For a *Ubuntu 24.04* + *ROS 2 Jazzy* setup, you can start with [usb_cam](https://github.com/ros-drivers/usb_cam). 
 It is a maintained ROS 2 driver for V4L cameras and works with typical  `/dev/video0` webcams.
