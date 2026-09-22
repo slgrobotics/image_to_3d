@@ -20,29 +20,27 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    return LaunchDescription([
-
         # ------------------------------------------------------------------
         # Decompress camera's RGB image:
         #
-        #   /camera/image/compressed
+        #   /camera/image_raw/compressed
         #       sensor_msgs/msg/CompressedImage
         #
         #              ↓
         #
-        #   /camera_3d/image/raw
+        #   /camera_3d/image_raw
         #       sensor_msgs/msg/Image
         #
         # image_transport operates on base topic names. The "compressed"
         # input transport therefore subscribes to:
         #
-        #   /camera/image/compressed
+        #   /camera/image_raw/compressed
         #
         # while the "raw" output transport publishes:
         #
-        #   /camera_3d/image/raw
+        #   /camera_3d/image_raw
         # ------------------------------------------------------------------
-        Node(
+        camera_rgb_decompress_node = Node(
             package='image_transport',
             executable='republish',
             name='camera_rgb_decompress',
@@ -52,10 +50,11 @@ def generate_launch_description():
                 'out_transport': 'raw',
             }],
             remappings=[
-                ('in/compressed', '/camera/image/compressed'),
-                ('out', '/camera_3d/image_decompressed'),
+                ('in/compressed', '/camera/image_raw/compressed'),
+                ('out', '/camera_3d/image_raw'),
             ],
-        ),
+        )
+
         # ------------------------------------------------------------------
         # RGB + depth → XYZRGB point cloud
         #
@@ -74,7 +73,7 @@ def generate_launch_description():
         #   /camera_3d/depth/points
         #       sensor_msgs/msg/PointCloud2
         # ------------------------------------------------------------------
-        Node(
+        point_cloud_xyzrgb_node = Node(
             package='depth_image_proc',
             executable='point_cloud_xyzrgb_node',
             name='depth_point_cloud_xyzrgb',
@@ -82,7 +81,7 @@ def generate_launch_description():
             remappings=[
                 (
                     'rgb/image_rect_color',
-                    '/camera_3d/image_decompressed'
+                    '/camera_3d/image_raw'
                 ),
                 (
                     'rgb/camera_info',
@@ -97,5 +96,9 @@ def generate_launch_description():
                     '/camera_3d/depth/points'
                 ),
             ],
-        ),
-    ])
+        )
+
+        return LaunchDescription([
+            #camera_rgb_decompress_node,
+            point_cloud_xyzrgb_node,
+        ])
