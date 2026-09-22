@@ -33,7 +33,7 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 def generate_launch_description():
     pkg_dir = get_package_share_directory('image_to_3d')
-    default_config  = os.path.join(pkg_dir, 'config', 'huskylens2.yaml')
+    default_config  = os.path.join(pkg_dir, 'config', 'image_to_3d.yaml')
 
     input_topic_arg = DeclareLaunchArgument(
         'input_topic', default_value='camera_3d/depth/image_16UC1',
