@@ -12,7 +12,7 @@ Launch it:
         input_topic:=camera_3d/depth/image \
         camera_info_topic:=camera_3d/depth/camera_info \
         output_topic:=camera_3d/scan \
-        target_frame:=huskylens2_link_optical \
+        target_frame:=camera_3d_link_optical \
         num_scan_bins:=160 \
         min_height:=-0.1 \
         max_height:=0.1 \
@@ -52,7 +52,7 @@ def generate_launch_description():
         description='LaserScan output topic')
 
     target_frame_arg = DeclareLaunchArgument(
-        'target_frame', default_value='huskylens2_link',
+        'target_frame', default_value='camera_3d_link',
         description='Frame ID for the published LaserScan')
 
     min_height_arg = DeclareLaunchArgument(
@@ -117,7 +117,7 @@ def generate_launch_description():
                         '--pitch', '0.0', # Pitch in radians
                         '--yaw',   '3.14159265359',   # Yaw in radians (e.g., 1.57079632679 = 90 degrees)
                         '--frame-id', 'map', # Parent frame ID
-                        '--child-frame-id', 'huskylens2_link' # Child frame ID
+                        '--child-frame-id', 'camera_3d_link' # Child frame ID
                     ]
     )
 

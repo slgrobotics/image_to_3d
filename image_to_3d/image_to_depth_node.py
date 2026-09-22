@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""ROS 2 bridge from HuskyLens compressed images to an HTTP depth server."""
+"""ROS 2 bridge from camera images to an HTTP depth server."""
 
 import queue
 import threading
@@ -17,8 +17,9 @@ from sensor_msgs.msg import CameraInfo, CompressedImage, Image
 
 """
 
-This node subscribes to a compressed image topic, sends the images to an HTTP depth server,
- and publishes the resulting depth maps as 16-bit single-channel images.
+This node subscribes to a raw or compressed image topic, sends the images to
+an HTTP depth server, and publishes the resulting depth maps as 16-bit
+single-channel images.
 
 ros2 launch image_to_3d image_to_depth_node.launch.py
 
@@ -37,6 +38,7 @@ class ImageToDepthNode(Node):
 
         self.declare_parameter(
             'input_topic', 'camera_3d/image/compressed')
+        self.declare_parameter('input_type', 'compressed')
         self.declare_parameter(
             'camera_info_topic', 'camera_3d/camera_info')
         self.declare_parameter(
@@ -49,11 +51,16 @@ class ImageToDepthNode(Node):
         self.declare_parameter('queue_size', 1)
 
         input_topic = self.get_parameter('input_topic').value
+        input_type = str(
+            self.get_parameter('input_type').value).strip().lower()
+        if input_type not in ('raw', 'compressed'):
+            raise ValueError('input_type must be either raw or compressed')
         camera_info_topic = self.get_parameter('camera_info_topic').value
         output_topic = self.get_parameter('output_topic').value
         camera_info_output_topic = self.get_parameter(
             'camera_info_output_topic').value
         self._depth_server = self.get_parameter('depth_server').value
+        self._input_compressed = input_type == 'compressed'
         self._request_timeout = float(
             self.get_parameter('request_timeout').value)
         queue_size = max(1, int(self.get_parameter('queue_size').value))
@@ -62,7 +69,8 @@ class ImageToDepthNode(Node):
         self._camera_info_pub = self.create_publisher(
             CameraInfo, camera_info_output_topic, 10)
         self.create_subscription(
-            CompressedImage, input_topic, self._on_image, 10)
+            CompressedImage if self._input_compressed else Image,
+            input_topic, self._on_image, 10)
         self.create_subscription(
             CameraInfo, camera_info_topic, self._on_camera_info, 10)
 
@@ -78,6 +86,8 @@ class ImageToDepthNode(Node):
 
         self.get_logger().info('Pipeline:')
         self.get_logger().info(f' - subscribing to:                  {input_topic}')
+        self.get_logger().info(
+            f' - input transport:                 {input_type}')
         self.get_logger().info(
             f' - subscribing to camera info:      {camera_info_topic}')
         self.get_logger().info(f' - converting via server at:        {self._depth_server}')
@@ -110,14 +120,24 @@ class ImageToDepthNode(Node):
                 continue
 
             try:
+                if self._input_compressed:
+                    request_data = bytes(message.data)
+                    content_type = (
+                        f'image/{message.format}'
+                        if message.format else 'image/jpeg')
+                else:
+                    frame = self._bridge.imgmsg_to_cv2(
+                        message, desired_encoding='bgr8')
+                    encoded_ok, encoded = cv2.imencode('.jpg', frame)
+                    if not encoded_ok:
+                        raise RuntimeError('could not encode raw image as JPEG')
+                    request_data = encoded.tobytes()
+                    content_type = 'image/jpeg'
+
                 response = self._session.post(
                     self._depth_server,
-                    data=bytes(message.data),
-                    headers={
-                        'Content-Type': (
-                            f'image/{message.format}'
-                            if message.format else 'image/jpeg')
-                    },
+                    data=request_data,
+                    headers={'Content-Type': content_type},
                     timeout=self._request_timeout,
                 )
                 response.raise_for_status()

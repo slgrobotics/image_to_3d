@@ -108,7 +108,7 @@ class DepthToLaserScanNode(Node):
             'camera_info_topic', 'camera_3d/camera_info')
         self.declare_parameter(
             'output_topic', 'camera_3d/scan')
-        self.declare_parameter('target_frame', 'huskylens2_link')
+        self.declare_parameter('target_frame', 'camera_3d_link')
         self.declare_parameter('min_height', -0.1)  # relative to camera optical center
         self.declare_parameter('max_height',  0.1)
         self.declare_parameter('range_min',   0.2)
