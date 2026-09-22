@@ -123,7 +123,8 @@ PORT = 5001
 
 # experimental scale factor for depth values (adjust these to your camera):
 #DEPTH_MULTIPLIER = 1.15   # for HuskyLens 2 stock camera module
-DEPTH_MULTIPLIER = 0.5  # for HuskyLens 2 wide-angle camera module
+#DEPTH_MULTIPLIER = 0.5  # for HuskyLens 2 wide-angle camera module
+DEPTH_MULTIPLIER = 0.45  # for Arducam wide-angle 160 degrees camera module (3280x2464 10-bit RGGB sensor, default 800x600 stream resolution)
 
 
 # ----------------------------------------------------------------------
