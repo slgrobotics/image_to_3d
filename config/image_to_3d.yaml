@@ -5,11 +5,11 @@
 image_to_depth_node:
   ros__parameters:
     # Use these when camera is calibrated and camera_info topic is available:
-    #input_topic:  camera/image/compressed     
+    #input_topic:  camera/image_raw/compressed     
     #camera_info_topic: camera/camera_info
 
     # Use these when camera is not calibrated and camera_info topic is produced by fake_camera_info_node:
-    input_topic:  camera_3d/image/compressed
+    input_topic:  camera_3d/image_raw
     camera_info_topic: camera_3d/camera_info
 
     output_topic: camera_3d/depth/image
@@ -34,11 +34,11 @@ depth_to_laserscan_node:
 fake_camera_info_node:
   ros__parameters:
     camera_fov: "92.0,76.0" 
-    input_topic: camera/image/compressed
-    output_topic: camera_3d/image
-    camera_info_topic: camera_3d/camera_info
+    input_topic: camera/image_raw/compressed
     input_type: compressed
+    output_topic: camera_3d/image_raw
     output_type: raw
+    camera_info_topic: camera_3d/camera_info  # synchronized output with camera image
     frame_id: huskylens2_link_optical
 
     

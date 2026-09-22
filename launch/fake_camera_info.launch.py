@@ -33,12 +33,17 @@ Launch it:
     ros2 launch image_to_3d fake_camera_info.launch.py
       or
     ros2 launch image_to_3d fake_camera_info.launch.py camera_fov:=92.0,76.0 \
-        input_topic:=camera/image/compressed \
-        output_topic:=camera_3d/image \
-        camera_info_topic:=camera_3d/camera_info \
+        input_topic:=camera/image_raw/compressed \
         input_type:=compressed \
+        output_topic:=camera_3d/image_raw \
         output_type:=raw \
+        camera_info_topic:=camera_3d/camera_info \
         frame_id:=fake_camera_link
+
+View the published image and CameraInfo topics:
+    ros2 topic echo /camera_3d/camera_info        
+    ros2 run image_view image_view --ros-args -r image:=/camera_3d/image_raw -p image_transport:=raw
+    
 """
 
 from launch import LaunchDescription
@@ -52,18 +57,21 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'camera_fov', default_value='92.0,76.0',
             description='Camera FOV in degrees as HFOV,VFOV'),
+
         DeclareLaunchArgument(
-            'input_topic', default_value='camera/image/compressed'),
-        DeclareLaunchArgument(
-            'output_topic', default_value='camera_3d/image'),
-        DeclareLaunchArgument(
-            'camera_info_topic', default_value='camera_3d/camera_info'),
+            'input_topic', default_value='camera/image_raw/compressed'),
         DeclareLaunchArgument(
             'input_type', default_value='compressed',
             description='Input message type: raw or compressed'),
+
+        DeclareLaunchArgument(
+            'output_topic', default_value='camera_3d/image_raw'),
         DeclareLaunchArgument(
             'output_type', default_value='raw',
             description='Output message type: raw or compressed'),
+
+        DeclareLaunchArgument(
+            'camera_info_topic', default_value='camera_3d/camera_info'),
         DeclareLaunchArgument('frame_id', default_value=''),
     ]
 

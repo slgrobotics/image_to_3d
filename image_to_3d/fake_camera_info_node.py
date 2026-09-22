@@ -60,7 +60,7 @@ from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import CameraInfo, CompressedImage, Image
 
 
-def parse_fov(value):
+def parse_fov(value) -> tuple[float, float]:
     try:
         horizontal_fov, vertical_fov = (
             float(component.strip()) for component in str(value).split(','))
@@ -78,7 +78,7 @@ def parse_fov(value):
     return horizontal_fov, vertical_fov
 
 
-def parse_message_type(value, field_name):
+def parse_message_type(value, field_name) -> bool:
     normalized = str(value).strip().lower()
     if normalized not in ('raw', 'compressed'):
         raise ValueError(f'{field_name} must be either raw or compressed')
@@ -93,11 +93,11 @@ class FakeCameraInfoNode(Node):
         self.get_logger().info('Starting fake_camera_info_node')
 
         self.declare_parameter('camera_fov', '92.0,76.0')
-        self.declare_parameter('input_topic', 'camera/image/compressed')
-        self.declare_parameter('output_topic', 'camera_3d/image')
+        self.declare_parameter('input_topic',  'camera/image_raw/compressed')
+        self.declare_parameter('input_type',   'compressed')
+        self.declare_parameter('output_topic', 'camera_3d/image_raw')
+        self.declare_parameter('output_type',  'raw')
         self.declare_parameter('camera_info_topic', 'camera_3d/camera_info')
-        self.declare_parameter('input_type', 'compressed')
-        self.declare_parameter('output_type', 'raw')
         self.declare_parameter('frame_id', '')
 
         self._horizontal_fov, self._vertical_fov = parse_fov(
@@ -169,23 +169,44 @@ class FakeCameraInfoNode(Node):
         camera_info = self._create_camera_info(width, height, image.header)
         camera_info.header.frame_id = frame_id
 
-        output_image = self._build_output_image(frame, image.header)
+        output_image = self._build_output_image(frame, image)
         output_image.header.frame_id = frame_id
         self._image_pub.publish(output_image)
         self._camera_info_pub.publish(camera_info)
 
-    def _build_output_image(self, frame, header):
-        output_header = header
+    def _build_output_image(self, frame, image) -> Image | CompressedImage:
+        if not self._input_compressed and not self._output_compressed:
+            return image
+
         if self._output_compressed:
             output_image = self._bridge.cv2_to_compressed_imgmsg(
                 frame, dst_format='jpeg')
-            output_image.header = output_header
+            output_image.header = image.header
             return output_image
-        output_image = self._bridge.cv2_to_imgmsg(frame, encoding='passthrough')
-        output_image.header = output_header
+
+        output_image = self._bridge.cv2_to_imgmsg(
+            frame, encoding=self._raw_encoding(frame))
+        output_image.header = image.header
         return output_image
 
-    def _create_camera_info(self, width, height, header):
+    @staticmethod
+    def _raw_encoding(frame):
+        channels = 1 if frame.ndim == 2 else frame.shape[2]
+        if frame.dtype == 'uint8':
+            encodings = {1: 'mono8', 3: 'bgr8', 4: 'bgra8'}
+        elif frame.dtype == 'uint16':
+            encodings = {1: 'mono16', 3: 'bgr16', 4: 'bgra16'}
+        else:
+            raise ValueError(
+                f'Unsupported raw image dtype for ROS encoding: {frame.dtype}')
+
+        try:
+            return encodings[channels]
+        except KeyError:
+            raise ValueError(
+                f'Unsupported raw image channel count: {channels}') from None
+
+    def _create_camera_info(self, width, height, header) -> CameraInfo:
         focal_x = (width / 2.0) / math.tan(
             math.radians(self._horizontal_fov / 2.0))
         focal_y = (height / 2.0) / math.tan(
