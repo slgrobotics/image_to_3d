@@ -102,19 +102,24 @@ A stand-alone `tests/test_depth.py` can directly call Depth Anything V2 model (w
 ### Camera setup
 
 > **Note:**
-> - you can use **any monocular camera** as input. All you need is your camera publishing images to `camera/image_raw/compressed`
+> - you can use **any monocular camera** as input. All you need is your camera publishing images to:
+>   - `camera/image_raw/compressed`
 > - a *native* Raspberry Pi *Arducam* with this [ROS2 driver](https://github.com/slgrobotics/robots_bringup/blob/main/Docs/Sensors/Camera.md#ros2-camera-publisher)
-> is available with regular or a "*fish eye*" lens. It works in 600x800 (native) and 640x480 (cropped) modes. It publishes:
+> is available with regular or a "*fish eye*" 160 degrees lens. It has IMX219 sensor with 3280x2464 matrix. It works in 600x800 (default) and 640x480 (cropped) streaming modes. It publishes:
 >   - `/camera/camera_info`
 >   - `/camera/image_raw`
->   - `/camera/image_raw/compressed`  <- we need this one, likely over the Wifi
+>   - `/camera/image_raw/compressed`  <- we only need this one, likely over the Wifi
+> - when *Arducam* is run in default 800x600 streaming mode at 5 FPS the WiFi load is less than 7 MBits/s (on *compressed* image traffic).
 > - if your camera is calibrated (for a specific WxH resolution, like 640x480) your driver node will publish correct *CameraInfo*. Then you don't need the Fake *CameraInfo* node.
+> You can also use [rectify_node](https://docs.ros.org/en/rolling/p/image_proc/doc/tutorials.html) to correct image distortions ("rectify" image).
 > - all examples in this package default to topic names above. Use topic remapping or relays if yours are different.
 > - some examples and images below mention *[HuskyLens 2](https://www.amazon.com/dp/B0H1Q77BTR)* camera and refer to [huskylens2_ros2](https://github.com/slgrobotics/huskylens2_ros2) package.
 
 > **Tips:**
 > - if your camera driver node does not publish *CameraInfo* (or if it doesn't produce desired results) - use `image_to_3d/fake_camera_info_node.py`
 > [node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py).
+> - When using *[Arducam](https://github.com/slgrobotics/robots_bringup/blob/main/Docs/Sensors/Camera.md#ros2-camera-publisher)* on Raspberry Pi limit it to ~5 FPS:
+>   - `ros2 run camera_ros camera_node --ros-args -p FrameDurationLimits:="[200000,200000]"`
 > - when running camera node without proper calibration you may want to remap its topic as follows:
 >   - `ros2 run camera_ros camera_node --ros-args -p FrameDurationLimits:="[200000,200000]" -r camera/camera_info:=camera/camera_info_bad`
 
@@ -337,7 +342,7 @@ ros2 launch image_to_3d point_cloud_rgb_node.launch.py
 
 ---------------------
 
-> RQT Graph using *Arducam* on Raspberry Pi:
+> RQT Graph using *Arducam* sensor on Raspberry Pi:
 >
 > <img alt="RQT_graph" src="https://github.com/user-attachments/assets/863dc2e1-a839-4d7a-bd75-bd1f95abbced" />
 
