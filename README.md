@@ -29,9 +29,6 @@ mkdir -p ~/robot_ws/src
 cd ~/robot_ws/src
 git clone https://github.com/slgrobotics/image_to_3d.git
 ```
-
-> **Check out** *~/robot_ws/src/image_to_3d/tests* directory
-
 From the workspace root, with your ROS 2 environment sourced:
 ```bash
 cd ~/robot_ws
@@ -40,6 +37,8 @@ colcon build
   or
 colcon build --packages-select image_to_3d --symlink-install
 ```
+
+> **Tip:** Check out *~/robot_ws/src/image_to_3d/tests* directory
 
 You need to set up two components:
 - [Depth Anything V2 HTTP Server](https://github.com/slgrobotics/image_to_3d#depth-anything-v2-http-server)
@@ -103,16 +102,17 @@ A stand-alone `tests/test_depth.py` can directly call Depth Anything V2 model (w
 ### Camera setup
 
 > **Note:**
-> - some examples and images below mention *[HuskyLens 2](https://www.amazon.com/dp/B0H1Q77BTR)* camera and refer to [huskylens2_ros2](https://github.com/slgrobotics/huskylens2_ros2) package.
-> - you can use **any monocular camera** as input. If your camera is calibrated (for a specific WxH resolution, like 640x480) your driver node will publish correct *CameraInfo*
+> - you can use **any monocular camera** as input. All you need is your camera publishing images to `camera/image_raw/compressed`
 > - a *native* Raspberry Pi *Arducam* with this [ROS2 driver](https://github.com/slgrobotics/robots_bringup/blob/main/Docs/Sensors/Camera.md#ros2-camera-publisher)
 > is available with regular or a "*fish eye*" lens. It works in 600x800 (native) and 640x480 (cropped) modes. It publishes:
 >   - `/camera/camera_info`
 >   - `/camera/image_raw`
->   - `/camera/image_raw/compressed`
+>   - `/camera/image_raw/compressed`  <- we need this one, likely over the Wifi
+> - if your camera is calibrated (for a specific WxH resolution, like 640x480) your driver node will publish correct *CameraInfo*. Then you don't need the Fake *CameraInfo* node.
 > - all examples in this package default to topic names above. Use topic remapping or relays if yours are different.
+> - some examples and images below mention *[HuskyLens 2](https://www.amazon.com/dp/B0H1Q77BTR)* camera and refer to [huskylens2_ros2](https://github.com/slgrobotics/huskylens2_ros2) package.
 
-> **Tip:**
+> **Tips:**
 > - if your camera driver node does not publish *CameraInfo* (or if it doesn't produce desired results) - use `image_to_3d/fake_camera_info_node.py`
 > [node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py).
 > - when running camera node without proper calibration you may want to remap its topic as follows:
@@ -135,15 +135,15 @@ ros2 run usb_cam usb_cam_node_exe --ros-args \
     -r __ns:=/camera \
     -p framerate:=10.0
 ```
-This is how RQT shows camera topics:
+This is how RQT shows camera topics (and new synthesized camera topics under `/camera_3d`):
 
-<img alt="RQT shows webcam topics" src="https://github.com/user-attachments/assets/a71978de-6a35-4991-985f-3bedea5dc9b6" />
+<img alt="RQT shows webcam topics" src="https://github.com/user-attachments/assets/0e071da3-2578-4736-8f7c-3ad94d357520" />
 
 > **Note:**
 > - the `-r __ns:=/camera` (the node namespace) becomes a prefix for all its topics
-> - the */camera/image_raw/compressedDepth* topic is not really published for monocular webcams
+> - the */camera/image_raw/compressedDepth* topic from USB webcams is not really published for monocular webcams
 > - the *framerate* does not have to be higher than what the *Depth Anything V2 HTTP Server* can process
-> - use RQT Viewer plugin to confirm that both *raw* and *compressed* topics are showing up properly. You can also use:
+> - use RQT Viewer plugin to confirm that at least the `/camera/image_raw/compressed` topic is showing up properly. You can also use:
 > ```
 > ros2 run image_view image_view --ros-args -r image:=/camera/image_raw -p image_transport:=compressed
 > ```
@@ -151,14 +151,23 @@ This is how RQT shows camera topics:
 
 ### Running a demo
 
-With camera publishing images to `camera/image_raw/compressed` and Depth Anything V2 HTTP Server at URL: http://localhost:5001/
+With:
+- camera publishing images to `camera/image_raw/compressed` at about ~5 FPS, and
+- Depth Anything V2 HTTP Server at URL: http://localhost:5001/
+
 you can launch a demo and see your monocular image stream magically converting to a 3D scene:
 
 ```
 cd ~/robot_ws
+colcon build
 source install/setup.bash
 ros2 launch image_to_3d all.launch.py
 ```
+
+You should see a full 3D scene in RViz2:
+
+<img alt="Demo 3D Scene" src="https://github.com/user-attachments/assets/b4d2cd67-95c8-429e-8bf9-9a5dd19326f5" />
+
 
 ### Fake *CameraInfo* node
 
