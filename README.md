@@ -168,6 +168,8 @@ You should see a full 3D scene in RViz2:
 
 <img alt="Demo 3D Scene" src="https://github.com/user-attachments/assets/b4d2cd67-95c8-429e-8bf9-9a5dd19326f5" />
 
+> **Tip:** Not seeing exact measurements? - review [Calibrating Pointcloud](https://github.com/slgrobotics/image_to_3d#calibrating-pointcloud) section.
+
 
 ### Fake *CameraInfo* node
 
