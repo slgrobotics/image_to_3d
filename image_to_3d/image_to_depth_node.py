@@ -25,7 +25,7 @@ ros2 launch image_to_3d image_to_depth_node.launch.py
 
   or
 
-ros2 run image_to_3d image_to_depth_node --ros-args -p depth_server:=http://127.0.0.1:5001/depth
+ros2 run image_to_3d image_to_depth_node --ros-args -p depth_server:=http://localhost:5001/depth
 
 """
 
@@ -46,7 +46,7 @@ class ImageToDepthNode(Node):
         self.declare_parameter(
             'camera_info_output_topic', 'camera_3d/depth/camera_info')
         self.declare_parameter(
-            'depth_server', 'http://127.0.0.1:5001/depth')
+            'depth_server', 'http://localhost:5001/depth')
         self.declare_parameter('request_timeout', 5.0)
         self.declare_parameter('queue_size', 1)
 

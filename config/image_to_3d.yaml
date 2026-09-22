@@ -16,7 +16,7 @@ image_to_depth_node:
 
     output_topic: camera_3d/depth/image_16UC1
     camera_info_output_topic: camera_3d/depth/camera_info  # re-published with same timestamp as depth image
-    depth_server: "http://127.0.0.1:5001/depth"
+    depth_server: "http://localhost:5001/depth"
     request_timeout: 10.0
     queue_size: 1
 

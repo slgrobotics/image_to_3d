@@ -23,7 +23,7 @@ Saved received_depth.png
 
 """
 
-SERVER = "http://127.0.0.1:5001/depth"
+SERVER = "http://localhost:5001/depth"
 MOUSE_LEAVE_EVENT = getattr(cv2, "EVENT_MOUSELEAVE", -1)
 
 

@@ -76,16 +76,16 @@ Run:
     Warming up GPU...
     GPU warm-up complete.
 
-    Starting Depth Anything V2 server at http://127.0.0.1:5001
+    Starting Depth Anything V2 server at http://localhost:5001
 
     INFO:     Started server process [1760635]
     INFO:     Waiting for application startup.
     INFO:     Application startup complete.
-    INFO:     Uvicorn running on http://127.0.0.1:5001 (Press CTRL+C to quit)
-    INFO:     127.0.0.1:34628 - "GET / HTTP/1.1" 200 OK   <- I opened http://127.0.0.1:5001/ in the browser
-    INFO:     127.0.0.1:34628 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+    INFO:     Uvicorn running on http://localhost:5001 (Press CTRL+C to quit)
+    INFO:     localhost:34628 - "GET / HTTP/1.1" 200 OK   <- I opened http://localhost:5001/ in the browser
+    INFO:     localhost:34628 - "GET /favicon.ico HTTP/1.1" 404 Not Found
     2129x1602  inference=88.1 ms  total=538.3 ms  depth=1.45-17.55 m  png=2672.8 KiB  <- I ran the test below with large test.png image
-    INFO:     127.0.0.1:51672 - "POST /depth HTTP/1.1" 200 OK
+    INFO:     localhost:51672 - "POST /depth HTTP/1.1" 200 OK
 
 
 Test:
@@ -98,7 +98,7 @@ Test:
         -X POST \
         -H "Content-Type: image/jpeg" \
         --data-binary @test.jpeg \
-        http://127.0.0.1:5001/depth \
+        http://localhost:5001/depth \
         --output depth_16.png
 
     The returned PNG contains uint16 depth values in millimeters.
@@ -118,7 +118,7 @@ MODEL_NAME = "depth-anything/Depth-Anything-V2-Metric-Indoor-Base-hf"
 # MODEL_NAME = "depth-anything/Depth-Anything-V2-Metric-Outdoor-Base-hf"
 # MODEL_NAME = "depth-anything/Depth-Anything-V2-Base-hf"
 
-HOST = "127.0.0.1"
+HOST = "localhost"
 PORT = 5001
 
 # experimental scale factor for depth values (adjust these to your camera):

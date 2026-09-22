@@ -14,7 +14,7 @@ Launch it:
     ros2 launch image_to_3d image_to_depth_node.launch.py
 
     ros2 launch image_to_3d image_to_depth_node.launch.py \
-        depth_server:=http://127.0.0.1:5001/depth \
+        depth_server:=http://localhost:5001/depth \
         input_topic:=camera_3d/image_raw \
         input_type:=raw \
         request_timeout:=10.0 \
@@ -38,7 +38,7 @@ def generate_launch_description():
 
     depth_server_arg = DeclareLaunchArgument(
         'depth_server',
-        default_value='http://127.0.0.1:5001/depth',
+        default_value='http://localhost:5001/depth',
         description='Depth Anything V2 server base URL')
 
     input_topic_arg = DeclareLaunchArgument(

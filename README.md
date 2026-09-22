@@ -194,7 +194,7 @@ ros2 run image_to_3d image_to_depth_node
 
   or
 
-ros2 run image_to_3d image_to_depth_node --ros-args -p depth_server:=http://127.0.0.1:5001/depth
+ros2 run image_to_3d image_to_depth_node --ros-args -p depth_server:=http://localhost:5001/depth
 ```
 
 Here is how it works when processing *HuskyLens 2* images:
