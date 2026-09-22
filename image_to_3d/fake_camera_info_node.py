@@ -98,7 +98,7 @@ class FakeCameraInfoNode(Node):
         self.declare_parameter('output_topic', 'camera_3d/image_raw')
         self.declare_parameter('output_type',  'raw')
         self.declare_parameter('camera_info_topic', 'camera_3d/camera_info')
-        self.declare_parameter('frame_id', '')
+        self.declare_parameter('frame_id', 'camera_3d_link_optical')
 
         self._horizontal_fov, self._vertical_fov = parse_fov(
             self.get_parameter('camera_fov').value)
@@ -136,6 +136,9 @@ class FakeCameraInfoNode(Node):
         self.get_logger().info(
             f'Output: {output_topic}  transport: {"compressed" if self._output_compressed else "raw"}  '
             f'with CameraInfo on {camera_info_topic}')
+        self.get_logger().info(
+            f'Frame ID for published messages: {self._frame_id or "<from input image>"}')
+
 
     def _on_image(self, image):
         if self._input_compressed:

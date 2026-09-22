@@ -43,7 +43,7 @@ Launch it:
 View the published image and CameraInfo topics:
     ros2 topic echo /camera_3d/camera_info        
     ros2 run image_view image_view --ros-args -r image:=/camera_3d/image_raw -p image_transport:=raw
-    
+
 """
 
 from launch import LaunchDescription
@@ -72,7 +72,7 @@ def generate_launch_description():
 
         DeclareLaunchArgument(
             'camera_info_topic', default_value='camera_3d/camera_info'),
-        DeclareLaunchArgument('frame_id', default_value=''),
+        DeclareLaunchArgument('frame_id', default_value='camera_3d_link_optical'),
     ]
 
     node = Node(
