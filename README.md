@@ -310,7 +310,13 @@ ros2 launch image_to_3d point_cloud_rgb_node.launch.py
 
 <img alt="PointCloud2 in RViz RGB color" src="https://github.com/user-attachments/assets/39f565d6-7001-4ee3-a5ed-700c432bca81" />
 
-<img alt="RQT_graph" src="https://github.com/user-attachments/assets/b4ccc447-899f-492b-885b-fa089bcce340" />
+---------------------
+
+> RQT Graph using *Arducam* on Raspberry Pi:
+>
+> <img alt="RQT_graph" src="https://github.com/user-attachments/assets/863dc2e1-a839-4d7a-bd75-bd1f95abbced" />
+
+---------------------
 
 ### Calibrating Pointcloud
 
