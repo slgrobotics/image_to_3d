@@ -19,7 +19,7 @@ Launch it:
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import GroupAction, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
@@ -35,10 +35,19 @@ def generate_launch_description():
     ]
 
     return LaunchDescription([
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                launch_directory + '/' + launch_file
-            )
+        #
+        # We need to use GroupAction with scoped=True to ensure that the launch arguments 
+        # with the same name in the included launch files do not conflict with each other.
+        #
+        GroupAction(
+            actions=[
+                IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource(
+                        launch_directory + '/' + launch_file
+                    )
+                ),
+            ],
+            scoped=True,
         )
         for launch_file in launch_files
     ])

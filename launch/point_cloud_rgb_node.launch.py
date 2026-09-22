@@ -50,8 +50,8 @@ def generate_launch_description():
                 'out_transport': 'raw',
             }],
             remappings=[
-                ('in/compressed', '/camera/image_raw/compressed'),
-                ('out', '/camera_3d/image_raw'),
+                ('in/compressed', 'camera/image_raw/compressed'),
+                ('out', 'camera_3d/image_raw'),
             ],
         )
 

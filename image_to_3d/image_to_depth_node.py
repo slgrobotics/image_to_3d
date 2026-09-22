@@ -37,8 +37,8 @@ class ImageToDepthNode(Node):
         self.get_logger().info('Starting image_to_depth_node')
 
         self.declare_parameter(
-            'input_topic', 'camera_3d/image/compressed')
-        self.declare_parameter('input_type', 'compressed')
+            'input_topic', 'camera_3d/image_raw')
+        self.declare_parameter('input_type', 'raw')  # raw or compressed
         self.declare_parameter(
             'camera_info_topic', 'camera_3d/camera_info')
         self.declare_parameter(
