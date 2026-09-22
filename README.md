@@ -110,7 +110,8 @@ A stand-alone `tests/test_depth.py` can directly call Depth Anything V2 model (w
 >   - `/camera/image_raw`
 >   - `/camera/image_raw/compressed`  <- we only need this one, likely over the Wifi
 > - when *Arducam* is run in default 800x600 streaming mode at 5 FPS the WiFi load is less than 7 MBits/s (on *compressed* image traffic).
-> - if your camera is calibrated (for a specific WxH resolution, like 640x480) your driver node will publish correct *CameraInfo*. Then you don't need the Fake *CameraInfo* node.
+> - if your camera is [calibrated](https://docs.ros.org/en/rolling/p/image_pipeline/) (for a specific WxH resolution, like 640x480) your driver node
+> will publish correct *CameraInfo*. Then you don't need the Fake *CameraInfo* node.
 > You can also use [rectify_node](https://docs.ros.org/en/rolling/p/image_proc/doc/tutorials.html) to correct image distortions ("rectify" image).
 > - all examples in this package default to topic names above. Use topic remapping or relays if yours are different.
 > - some examples and images below mention *[HuskyLens 2](https://www.amazon.com/dp/B0H1Q77BTR)* camera and refer to [huskylens2_ros2](https://github.com/slgrobotics/huskylens2_ros2) package.
@@ -189,7 +190,7 @@ This node subscribes to a raw or compressed camera image, determines the image
 dimensions, and republishes the image together with a synchronized CameraInfo
 message.
 
-In most cases you don't need to calibrate your camera - just figure out its actual horizontal and vertical
+In most cases you don't need to [calibrate](https://docs.ros.org/en/rolling/p/image_pipeline/) your camera - just figure out its actual horizontal and vertical
 fields of view (*HFOV* and *VFOV*) in degrees. These could be different when using different resolution modes.
 
 Launch it using a sample [launch file](https://github.com/slgrobotics/image_to_3d/blob/main/launch/fake_camera_info.launch.py):
@@ -402,12 +403,12 @@ These are FOV values that directly affect calculated values in CameraInfo.
 
 **Note:** use "map" as *Fixed Frame* in RViz2.
 
-> Wide Angle camera calibrated:
+> Wide Angle camera depth-calibrated:
 <img alt="Wide Angle calibrated" src="https://github.com/user-attachments/assets/f87a93e3-0528-4588-b2e8-717d1155b56d" />
 
 ---------------------
 
-> Stock camera calibrated:
+> Stock camera depth-calibrated:
 <img alt="Stock camera calibrated" src="https://github.com/user-attachments/assets/339f18de-ce2a-45fb-86bd-f50fdbc14359" />
 
 
