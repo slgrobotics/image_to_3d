@@ -1,4 +1,6 @@
 
+Back to [Package README](https://github.com/slgrobotics/image_to_3d#depth-anything-v2-http-server)
+
 ## Running HTTP Depth Server 
 
 > A machine with **Nvidia Geforce RTX 3060** or better is required.
@@ -59,6 +61,6 @@ A stand-alone `tests/test_depth.py` can directly call Depth Anything V2 model (w
 
 -------------------------
 
-Back to [Package README](https://github.com/slgrobotics/image_to_3d/blob/main/README.md)
+Back to [Package README](https://github.com/slgrobotics/image_to_3d#depth-anything-v2-http-server)
 
 Back to [Main Project Home](https://github.com/slgrobotics/articubot_one/wiki)
