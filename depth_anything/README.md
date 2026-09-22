@@ -45,6 +45,8 @@ Run the server:
 
 It should be ready to take HTTP/POST images and will return depth maps/images in PNG uint_16 format, ready for ROS2 processing.
 
+URL: http://localhost:5001/
+
 > Check out `~/robot_ws/src/image_to_3d/tests` directory
 
 The following tests interact with the server in a client role:

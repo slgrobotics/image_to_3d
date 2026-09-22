@@ -148,8 +148,8 @@ performs inference, and returns the depth map as a 16-bit PNG image.
                  │ image/jpeg or image/png
                  ▼
     ┌────────────────────────────┐
-    │ Depth Anything V2 server   │
-    │                            │
+    │ Depth Anything V2 server   │  http://localhost:5001/
+    │                            │  endpoint: "/depth"
     │ decode image               │
     │ preprocess                 │
     │ CUDA inference             │
