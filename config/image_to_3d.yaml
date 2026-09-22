@@ -14,7 +14,7 @@ image_to_depth_node:
     input_type:   raw
     camera_info_topic: camera_3d/camera_info
 
-    output_topic: camera_3d/depth/image
+    output_topic: camera_3d/depth/image_16UC1
     camera_info_output_topic: camera_3d/depth/camera_info  # re-published with same timestamp as depth image
     depth_server: "http://127.0.0.1:5001/depth"
     request_timeout: 10.0
@@ -23,7 +23,7 @@ image_to_depth_node:
 depth_to_laserscan_node:
   ros__parameters:
     target_frame: camera_3d_link
-    input_topic:  camera_3d/depth/image
+    input_topic:  camera_3d/depth/image_16UC1
     output_topic: camera_3d/scan
     camera_info_topic: camera_3d/depth/camera_info
     num_scan_bins: 160  # good for 640x480 depth image, 4 depth pixels per scan bin

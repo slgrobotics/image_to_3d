@@ -27,9 +27,9 @@ def generate_launch_description():
             name='depth_point_cloud',
             output='screen',
             remappings=[
-                ('camera_info', '/camera_3d/depth/camera_info'),  # must be synchronized with depth image 
-                ('image_rect', '/camera_3d/depth/image'),
-                ('points', '/camera_3d/depth/points'),
+                ('camera_info', 'camera_3d/depth/camera_info'),  # must be synchronized with depth image below
+                ('image_rect', 'camera_3d/depth/image_16UC1'),
+                ('points', 'camera_3d/depth/points'),
             ],
         ),
     ])

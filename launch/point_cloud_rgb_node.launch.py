@@ -62,7 +62,7 @@ def generate_launch_description():
         #   /camera_3d/image/raw
         #
         # Depth:
-        #   /camera_3d/depth/image
+        #   /camera_3d/depth/image_16UC1
         #       encoding: 16UC1
         #       units: millimeters
         #
@@ -81,19 +81,19 @@ def generate_launch_description():
             remappings=[
                 (
                     'rgb/image_rect_color',
-                    '/camera_3d/image_raw'
+                    'camera_3d/image_raw'
                 ),
                 (
                     'rgb/camera_info',
-                    '/camera_3d/depth/camera_info'
+                    'camera_3d/depth/camera_info'
                 ),
                 (
                     'depth_registered/image_rect',
-                    '/camera_3d/depth/image'
+                    'camera_3d/depth/image_16UC1'
                 ),
                 (
                     'points',
-                    '/camera_3d/depth/points'
+                    'camera_3d/depth/points'
                 ),
             ],
         )

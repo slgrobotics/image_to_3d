@@ -9,7 +9,7 @@ Launch it:
       or
 
     ros2 launch image_to_3d depth_to_laserscan.launch.py \
-        input_topic:=camera_3d/depth/image \
+        input_topic:=camera_3d/depth/image_16UC1 \
         camera_info_topic:=camera_3d/depth/camera_info \
         output_topic:=camera_3d/scan \
         target_frame:=camera_3d_link_optical \
@@ -36,7 +36,7 @@ def generate_launch_description():
     default_config  = os.path.join(pkg_dir, 'config', 'huskylens2.yaml')
 
     input_topic_arg = DeclareLaunchArgument(
-        'input_topic', default_value='camera_3d/depth/image',
+        'input_topic', default_value='camera_3d/depth/image_16UC1',
         description='Depth image topic')
 
     camera_info_topic_arg = DeclareLaunchArgument(

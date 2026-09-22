@@ -103,7 +103,7 @@ class DepthToLaserScanNode(Node):
         self.get_logger().info('Starting depth_to_laserscan_node')
 
         self.declare_parameter(
-            'input_topic', 'camera_3d/depth/image')
+            'input_topic', 'camera_3d/depth/image_16UC1')
         self.declare_parameter(
             'camera_info_topic', 'camera_3d/camera_info')
         self.declare_parameter(

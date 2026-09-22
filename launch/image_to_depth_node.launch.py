@@ -58,7 +58,7 @@ def generate_launch_description():
 
     output_topic_arg = DeclareLaunchArgument(
         'output_topic',
-        default_value='camera_3d/depth/image',
+        default_value='camera_3d/depth/image_16UC1',
         description='Output depth image topic, 16UC1 encoding')
 
     camera_info_output_topic_arg = DeclareLaunchArgument(
