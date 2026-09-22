@@ -8,9 +8,10 @@ Back to [Main Project Home](https://github.com/slgrobotics/articubot_one/wiki)
 
 Contents:
 - [Build and run](https://github.com/slgrobotics/image_to_3d#build-and-run)
-- [Camera setup](https://github.com/slgrobotics/image_to_3d#camera-setup)
-- [Fake CameraInfo node](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#fake-camerainfo-node)
 - [Depth Anything V2 HTTP Server](https://github.com/slgrobotics/image_to_3d#depth-anything-v2-http-server)
+- [Camera setup](https://github.com/slgrobotics/image_to_3d#camera-setup)
+- [Running a demo](https://github.com/slgrobotics/image_to_3d#running-a-demo)
+- [Fake CameraInfo node](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#fake-camerainfo-node)
 - [Image to Depth node](https://github.com/slgrobotics/image_to_3d#image-to-depth-node)
 - [Depth To Laser Scan node](https://github.com/slgrobotics/image_to_3d#depth-to-laser-scan-node)
 - [Producing PointCloud2 from Depth topic](https://github.com/slgrobotics/image_to_3d#producing-pointcloud2-from-depth-topic)
@@ -39,7 +40,65 @@ colcon build
   or
 colcon build --packages-select image_to_3d --symlink-install
 ```
-Now you can run specific nodes as required.
+
+You need to set up two components:
+- [Depth Anything V2 HTTP Server](https://github.com/slgrobotics/image_to_3d#depth-anything-v2-http-server)
+- [Any monocular camera](https://github.com/slgrobotics/image_to_3d#camera-setup)
+
+After that you can run a live demo or launch specific nodes as required.
+
+### Depth Anything V2 HTTP Server
+
+Refer to [this guide](https://github.com/slgrobotics/image_to_3d/blob/main/depth_anything/README.md) for installation and use.
+
+See [this guide](https://github.com/slgrobotics/articubot_one/wiki/Depth-Anything-V2) for more information.
+
+The *Depth Anything V2 HTTP Server* in the `depth_anything` [directory](https://github.com/slgrobotics/image_to_3d/blob/main/depth_anything/README.md)
+takes an image and returns a depth map (as a PNG image).
+
+It must be run in an environment with a GPU (CUDA) - normally a Python
+"sandboxed" *virtual environment* with PyTorch installed.
+
+> **Note:**
+> - A machine with *Nvidia Geforce RTX 3060* or better is required.
+> - You can run either *indoors* or *outdoors* model in a single server instance
+
+A ROS2 node or any other program can issue an HTTP POST request to this server
+with an image.
+
+The server loads the model once at startup, processes each input image,
+performs inference, and returns the depth map as a 16-bit PNG image.
+
+```    
+     ROS 2 node / other client
+                 │
+                 │ HTTP POST
+                 │ image/jpeg or image/png
+                 ▼
+    ┌────────────────────────────┐
+    │ Depth Anything V2 server   │  http://localhost:5001/
+    │                            │  endpoint: "/depth"
+    │ decode image               │
+    │ preprocess                 │
+    │ CUDA inference             │
+    │ resize to input size       │
+    │ meters → uint16 mm         │ 
+    │   & Apply DEPTH_MULTIPLIER │
+    │ encode PNG                 │
+    └────────────┬───────────────┘
+                 │
+                 │ HTTP response
+                 │ image/png
+                 ▼
+          16-bit depth map
+```
+
+The following tests interact with the server in a client role:
+- `tests/test_depth_server.py`
+- `tests/test_depth_server_gui.py`
+- `tests/test_depth_webcam.py`
+
+A stand-alone `tests/test_depth.py` can directly call Depth Anything V2 model (while running under a [virtual environment](https://github.com/slgrobotics/articubot_one/wiki/Depth-Anything-V2)).
 
 ### Camera setup
 
@@ -90,6 +149,17 @@ This is how RQT shows camera topics:
 > ```
 > - this is how to use *[compressed transport](https://github.com/slgrobotics/robots_bringup/blob/main/Docs/Sensors/Camera.md#using-compressed-transport)*
 
+### Running a demo
+
+With camera publishing images to `camera/image_raw/compressed` and Depth Anything V2 HTTP Server at URL: http://localhost:5001/
+you can launch a demo and see your monocular image stream magically converting to a 3D scene:
+
+```
+cd ~/robot_ws
+source install/setup.bash
+ros2 launch image_to_3d all.launch.py
+```
+
 ### Fake *CameraInfo* node
 
 The [fake_camera_info_node](https://github.com/slgrobotics/image_to_3d/blob/main/image_to_3d/fake_camera_info_node.py)
@@ -115,62 +185,6 @@ ros2 launch image_to_3d fake_camera_info.launch.py camera_fov:=92.0,76.0
 > - The generated *CameraInfo* is an approximation based on the supplied field of view.
 > - It does not replace a proper intrinsic camera [calibration](https://docs.ros.org/en/kilted/p/camera_calibration/doc/tutorial_mono.html),
 > particularly for cameras with significant lens distortion.
-
-### Depth Anything V2 HTTP Server
-
-See this [guide](https://github.com/slgrobotics/articubot_one/wiki/Depth-Anything-V2) for information.
-
-The *Depth Anything V2 HTTP Server* in the `depth_anything` [directory](https://github.com/slgrobotics/image_to_3d/blob/main/depth_anything/README.md)
-takes an image and returns a depth map (as a PNG image).
-
-It must be run in an environment with a GPU (CUDA) - normally a Python
-"sandboxed" *virtual environment* with PyTorch installed.
-
-> **Note:**
-> - A machine with *Nvidia Geforce RTX 3060* or better is required.
-> - You can run either *indoors* or *outdoors* model in a single server instance
-
-You can run the following test in a *virtual environment*:
-- `tests/test_depth.py`
-
-Refer to [this guide](https://github.com/slgrobotics/image_to_3d/blob/main/depth_anything/README.md) for installation and use.
-
-A ROS2 node or any other program can issue an HTTP POST request to this server
-with an image.
-
-The server loads the model once at startup, processes each input image,
-performs inference, and returns the depth map as a 16-bit PNG image.
-
-```    
-     ROS 2 node / other client
-                 │
-                 │ HTTP POST
-                 │ image/jpeg or image/png
-                 ▼
-    ┌────────────────────────────┐
-    │ Depth Anything V2 server   │  http://localhost:5001/
-    │                            │  endpoint: "/depth"
-    │ decode image               │
-    │ preprocess                 │
-    │ CUDA inference             │
-    │ resize to input size       │
-    │ meters → uint16 mm         │ 
-    │   & Apply DEPTH_MULTIPLIER │
-    │ encode PNG                 │
-    └────────────┬───────────────┘
-                 │
-                 │ HTTP response
-                 │ image/png
-                 ▼
-          16-bit depth map
-```
-
-The following tests interact with the server in a client role:
-- `tests/test_depth_server.py`
-- `tests/test_depth_server_gui.py`
-- `tests/test_depth_webcam.py`
-
-A stand-alone `tests/test_depth.py` can directly call Depth Anything V2 model (while running under a [virtual environment](https://github.com/slgrobotics/articubot_one/wiki/Depth-Anything-V2)).
 
 ### Image to Depth node
 
