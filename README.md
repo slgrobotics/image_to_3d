@@ -122,6 +122,8 @@ A stand-alone `tests/test_depth.py` can directly call Depth Anything V2 model (w
 >   - `ros2 run camera_ros camera_node --ros-args -p FrameDurationLimits:="[200000,200000]"`
 > - when running camera node without proper calibration you may want to remap its topic as follows:
 >   - `ros2 run camera_ros camera_node --ros-args -p FrameDurationLimits:="[200000,200000]" -r camera/camera_info:=camera/camera_info_bad`
+> - review [this guide](https://github.com/slgrobotics/huskylens2_ros2/blob/main/README.md#the-optical-coordinate-system-for-cameras-and-sensors)
+> to understand the difference between the *camera_link* and *camera_link_optical* TF frames.
 
 For a *Ubuntu 24.04* + *ROS 2 Jazzy* setup, you can start with [usb_cam](https://github.com/ros-drivers/usb_cam). 
 It is a maintained ROS 2 driver for V4L cameras and works with typical  `/dev/video0` webcams.
