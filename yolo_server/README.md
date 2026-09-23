@@ -20,6 +20,14 @@ Both scripts use the `yolo26s.pt` model and a confidence threshold of `0.40`.
 - the test script will open a window to display the annotated camera stream, so a graphical environment is desirable.
 
 **Preparation:**
+
+If you haven't done it yet, place this package in your ROS 2 workspace's src directory:
+```
+mkdir -p ~/robot_ws/src
+cd ~/robot_ws/src
+git clone https://github.com/slgrobotics/image_to_3d.git
+```
+Create and activate Python virtual environment:
 ```
 cd ~/robot_ws/src/image_to_3d/yolo_server
 python3 -m venv .venv
@@ -62,6 +70,8 @@ python3 test_yolo.py
 ```
 
 Press `q` or `Esc` to stop. `Ctrl+C` also shuts down cleanly and releases the camera.
+
+<img alt="test_yolo_webcam" src="https://github.com/user-attachments/assets/35581ae4-cce2-47f0-89d6-21646aa8ebd2" />
 
 ### Running Image Inference HTTP Server 
 
@@ -126,17 +136,22 @@ Example response:
 - Empty or invalid image requests return HTTP `400`.
 - Inference failures return HTTP `500`.
 
+### HTTP Client test
+
 > Check out `~/robot_ws/src/image_to_3d/tests` directory
 
-The following test interacts with the server in a client role:
-
-- `tests/test_yolo_server.py`
+The following test interacts with the server in a client role. With the server started (in a *virtual environment*), run the HTTP client in a regular terminal (outside of the virtual environment):
+```
+tests/test_yolo_server.py
+```
 
 It retrieves images from a webcam and sends them to the Image Inference HTTP Server, displaying the returned results in a window.
 
 ```
 cd ~/robot_ws/src/image_to_3d/tests$ python3 test_yolo_webcam.py
 ```
+
+<img width="1199" height="672" alt="Screenshot from 2026-09-23 17-08-37" src="https://github.com/user-attachments/assets/6fa07073-67a5-48b8-ac68-e54bbd66e85d" />
 
 -------------------------
 
