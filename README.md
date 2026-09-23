@@ -14,6 +14,7 @@ Contents:
 - [Running a demo](https://github.com/slgrobotics/image_to_3d#running-a-demo)
 - [Fake CameraInfo node](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#fake-camerainfo-node)
 - [Image to Depth node](https://github.com/slgrobotics/image_to_3d#image-to-depth-node)
+- [Image to Depth Plus YOLO node](https://github.com/slgrobotics/image_to_3d/tree/main#image-to-depth-plus-yolo-node)
 - [Depth To Laser Scan node](https://github.com/slgrobotics/image_to_3d#depth-to-laser-scan-node)
 - [Producing PointCloud2 from Depth topic](https://github.com/slgrobotics/image_to_3d#producing-pointcloud2-from-depth-topic)
 - [Calibrating Pointcloud](https://github.com/slgrobotics/image_to_3d#calibrating-pointcloud)
