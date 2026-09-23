@@ -110,6 +110,7 @@ A stand-alone `tests/test_depth.py` can directly call Depth Anything V2 model (w
 >   - `/camera/image_raw`
 >   - `/camera/image_raw/compressed`  <- we only need this one, likely over the Wifi
 > - when *Arducam* is run in default 800x600 streaming mode at 5 FPS the WiFi load is less than 7 MBits/s (on *compressed* image traffic).
+> - monocular camera calibration process is described in this [Tutorial](https://docs.ros.org/en/rolling/p/camera_calibration/doc/tutorial_mono.html).
 > - if your camera is [calibrated](https://docs.ros.org/en/rolling/p/image_pipeline/) (for a specific WxH resolution, like 640x480) your driver node
 > will publish correct *CameraInfo*. Then you don't need the Fake *CameraInfo* node.
 > You can also use [rectify_node](https://docs.ros.org/en/rolling/p/image_proc/doc/tutorials.html) to correct image distortions ("rectify" image).
