@@ -63,7 +63,7 @@ python3 test_yolo.py
 
 Press `q` or `Esc` to stop. `Ctrl+C` also shuts down cleanly and releases the camera.
 
-### Running HTTP Image Inference Server 
+### Running Image Inference HTTP Server 
 
 > **Note:** The model file must be available as `yolo26s.pt` in the working directory. If
 > it is not present, Ultralytics may download it when the model is initialized.
@@ -128,11 +128,15 @@ Example response:
 
 > Check out `~/robot_ws/src/image_to_3d/tests` directory
 
-The following tests interact with the server in a client role:
+The following test interacts with the server in a client role:
 
 - `tests/test_yolo_server.py`
-- `tests/test_yolo_server_gui.py`
-- `tests/test_yolo_webcam.py`
+
+It retrieves images from a webcam and sends them to the Image Inference HTTP Server, displaying the returned results in a window.
+
+```
+cd ~/robot_ws/src/image_to_3d/tests$ python3 test_yolo_webcam.py
+```
 
 -------------------------
 
