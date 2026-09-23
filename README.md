@@ -9,6 +9,7 @@ Back to [Main Project Home](https://github.com/slgrobotics/articubot_one/wiki)
 Contents:
 - [Build and run](https://github.com/slgrobotics/image_to_3d#build-and-run)
 - [Depth Anything V2 HTTP Server](https://github.com/slgrobotics/image_to_3d#depth-anything-v2-http-server)
+- [Image Inference (YOLO) HTTP Server](https://github.com/slgrobotics/image_to_3d#image-inference-yolo-http-server)
 - [Camera setup](https://github.com/slgrobotics/image_to_3d#camera-setup)
 - [Running a demo](https://github.com/slgrobotics/image_to_3d#running-a-demo)
 - [Fake CameraInfo node](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#fake-camerainfo-node)
@@ -98,6 +99,24 @@ The following tests interact with the server in a client role:
 - `tests/test_depth_webcam.py`
 
 A stand-alone `tests/test_depth.py` can directly call Depth Anything V2 model (while running under a [virtual environment](https://github.com/slgrobotics/articubot_one/wiki/Depth-Anything-V2)).
+
+### Image Inference (YOLO) HTTP Server
+
+Refer to [this guide](https://github.com/slgrobotics/image_to_3d/blob/main/yolo_server/README.md) for installation and use.
+
+> **Tip:** you can skip querying YOLO server if you edit the  [launch/all.launch.py](https://github.com/slgrobotics/image_to_3d/blob/main/launch/all.launch.py) file:
+> ```
+>     launch_files = [
+>        'fake_camera_info.launch.py',
+>        #'image_to_depth_node.launch.py',
+>        'image_to_depth_yolo_node.launch.py',
+>        'depth_to_laserscan.launch.py',
+>        'launch_rviz.launch.py',
+>        #'point_cloud_node.launch.py',
+>        'point_cloud_rgb_node.launch.py',
+>    ]
+> ```
+> Otherwise make sure both servers are running.
 
 ### Camera setup
 
@@ -259,6 +278,18 @@ For example, this is how an image from [HuskyLens 2](https://github.com/slgrobot
 Depth image returned by *Depth Anything V2 server* and published by *image_to_depth_node* as, for example, `camera_3d/depth/image_16UC1`:
 
 <img width="757" height="567" alt="Screenshot from 2026-09-15 17-07-47" src="https://github.com/user-attachments/assets/bb1fea82-c46f-45af-97d7-a5b0faf03fe5" />
+
+### Image to Depth Plus YOLO node
+
+It is similar to the *Image to Depth node*, but also:
+- Posts each camera image to http://localhost:5002/detect.
+- Parses YOLO JSON detections.
+- Uses each bounding-box center with the returned depth map.
+- Projects pixels into 3D using *CameraInfo*.
+- Samples a 5x5 neighborhood and uses the median valid depth.
+- Publishes `vision_msgs/Detection3DArray` on: `camera_3d/detections`
+- Publishes coordinates in the camera optical frame from the image header.
+- Estimates 3D bounding-box width and height.
 
 ### Depth To Laser Scan Node
 
