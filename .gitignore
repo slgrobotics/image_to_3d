@@ -217,3 +217,5 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 tests/received_depth.png
+yolo_server/yolo26s.pt
+yolo_server/runs/detect/predict/0.avi
