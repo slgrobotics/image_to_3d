@@ -39,6 +39,56 @@ def draw_detection(frame, detection):
 
     cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
+    center = ((x1 + x2) // 2, (y1 + y2) // 2)
+    cv2.drawMarker(
+        frame,
+        center,
+        (255, 255, 255),
+        cv2.MARKER_CROSS,
+        30,
+        5,
+        cv2.LINE_AA,
+    )
+    cv2.drawMarker(
+        frame,
+        center,
+        (0, 0, 255),
+        cv2.MARKER_CROSS,
+        22,
+        2,
+        cv2.LINE_AA,
+    )
+
+    coordinate_label = f"({center[0]}, {center[1]})"
+    (text_width, text_height), text_baseline = cv2.getTextSize(
+        coordinate_label,
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.55,
+        2,
+    )
+    text_x = min(center[0] + 20, frame.shape[1] - text_width - 5)
+    text_y = max(center[1] - 20, text_height + text_baseline + 5)
+    cv2.putText(
+        frame,
+        coordinate_label,
+        (text_x, text_y),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.55,
+        (0, 0, 0),
+        4,
+        cv2.LINE_AA,
+    )
+    cv2.putText(
+        frame,
+        coordinate_label,
+        (text_x, text_y),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.55,
+        (255, 255, 255),
+        2,
+        cv2.LINE_AA,
+    )
+
     label = f"{class_name}: {confidence:.2f}"
     text_y = max(y1 - 10, 20)
     cv2.putText(
@@ -97,11 +147,14 @@ def main():
                 print(f"Frame {frame_count}: JPEG encoding failed.")
                 continue
 
+            jpeg_bytes = jpeg.tobytes()
+            posted_size_kb = round(len(jpeg_bytes) / 1024)
+
             request_start = time.perf_counter()
             try:
                 response = session.post(
                     SERVER,
-                    data=jpeg.tobytes(),
+                    data=jpeg_bytes,
                     headers={"Content-Type": "image/jpeg"},
                     timeout=REQUEST_TIMEOUT,
                 )
@@ -145,9 +198,11 @@ def main():
 
             cv2.putText(
                 frame,
+                f"HTTP POST: {frame.shape[1]}x{frame.shape[0]}, "
+                f"{posted_size_kb} KB  "
                 f"Detections: {len(detections)}  "
                 f"Inference: {inference_ms:.1f} ms  "
-                f"HTTP: {round_trip_ms:.1f} ms",
+                f"HTTP Roundtrip: {round_trip_ms:.1f} ms (FPS={client_fps:.1f})",
                 (20, 35),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.65,
@@ -157,11 +212,11 @@ def main():
             )
             cv2.putText(
                 frame,
-                f"Server total: {server_total_ms:.1f} ms  "
-                f"Client: {client_fps:.1f} FPS  Press q or Esc to exit",
+                f"Server-side processing time: {server_total_ms:.1f} ms  "
+                "    Press q or Esc to exit",
                 (20, 65),
                 cv2.FONT_HERSHEY_SIMPLEX,
-                0.55,
+                0.65,
                 (255, 255, 255),
                 2,
                 cv2.LINE_AA,
@@ -171,8 +226,8 @@ def main():
 
             print(
                 f"{frame_count:5d}  "
-                f"JPEG={encode_ms:5.1f} ms  "
-                f"HTTP={round_trip_ms:6.1f} ms  "
+                f"JPEG Encoding={encode_ms:5.1f} ms  "
+                f"HTTP Roundtrip={round_trip_ms:6.1f} ms  "
                 f"inference={inference_ms:5.1f} ms  "
                 f"detections={len(detections)}"
             )
