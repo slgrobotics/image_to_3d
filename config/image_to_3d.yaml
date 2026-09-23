@@ -16,7 +16,29 @@ image_to_depth_node:
 
     output_topic: camera_3d/depth/image_16UC1
     camera_info_output_topic: camera_3d/depth/camera_info  # re-published with same timestamp as depth image
+
     depth_server: "http://localhost:5001/depth"
+    request_timeout: 10.0
+    queue_size: 1
+
+image_to_depth_yolo_node:
+  ros__parameters:
+    # Use these when camera is calibrated and camera_info topic is available:
+    #input_topic:  camera/image_raw/compressed     
+    #input_type:   compressed
+    #camera_info_topic: camera/camera_info
+
+    # Use these when camera is not calibrated and camera_info topic is produced by fake_camera_info_node:
+    input_topic:  camera_3d/image_raw
+    input_type:   raw
+    camera_info_topic: camera_3d/camera_info
+
+    output_topic: camera_3d/depth/image_16UC1
+    camera_info_output_topic: camera_3d/depth/camera_info  # re-published with same timestamp as depth image
+    detections_topic: camera_3d/detections
+
+    depth_server: "http://localhost:5001/depth"
+    inference_server: "http://localhost:5002/detect"
     request_timeout: 10.0
     queue_size: 1
 
