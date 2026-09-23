@@ -117,6 +117,9 @@ try:
         if key == 27 or key == ord("q"):
             break
 
+except KeyboardInterrupt:
+    print("\nStopping YOLO detection...")
+
 finally:
     camera.release()
     cv2.destroyAllWindows()
