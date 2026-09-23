@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-image_to_depth_node.launch.py - launch the node querying the Depth Anything V2 server for depth maps/images
+image_to_depth_yolo_node.launch.py - launch the node querying the Depth Anything V2 server for depth maps/images
 
 Works with the HuskyLens 2 MCP node (launch/huskylens2_mcp.launch.py), or any other node publishing raw or compressed images.
 
@@ -11,9 +11,9 @@ Make sure that the Depth Anything V2 server is running, e.g.:
     ./depth_server.py
 
 Launch it:
-    ros2 launch image_to_3d image_to_depth_node.launch.py
+    ros2 launch image_to_3d image_to_depth_yolo_node.launch.py
 
-    ros2 launch image_to_3d image_to_depth_node.launch.py \
+    ros2 launch image_to_3d image_to_depth_yolo_node.launch.py \
         depth_server:=http://localhost:5001/depth \
         input_topic:=camera_3d/image_raw \
         input_type:=raw \
@@ -91,7 +91,7 @@ def generate_launch_description():
         default_value=default_config,
         description='Path to the ROS 2 parameter YAML file.')
 
-    image_to_depth_node = Node(
+    image_to_depth_yolo_node = Node(
         package='image_to_3d',
         executable='image_to_depth_yolo_node',
         name='image_to_depth_yolo_node',
@@ -100,10 +100,10 @@ def generate_launch_description():
             LaunchConfiguration('params_file'),
            {
                 'input_topic': LaunchConfiguration('input_topic'),
+                'input_type': LaunchConfiguration('input_type'),
                 'depth_server': LaunchConfiguration('depth_server'),
                 'inference_server': LaunchConfiguration('inference_server'),
                 'detections_topic': LaunchConfiguration('detections_topic'),
-                'input_type': LaunchConfiguration('input_type'),
                 'camera_info_topic': LaunchConfiguration('camera_info_topic'),
                 'output_topic': LaunchConfiguration('output_topic'),
                 'camera_info_output_topic': LaunchConfiguration(
@@ -155,8 +155,8 @@ def generate_launch_description():
         depth_server_arg,
         inference_server_arg,
         detections_topic_arg,
-        input_type_arg,
         input_topic_arg,
+        input_type_arg,
         camera_info_topic_arg,
         output_topic_arg,
         camera_info_output_topic_arg,
@@ -165,5 +165,5 @@ def generate_launch_description():
         config_arg,
         tf_camera_to_map,
         tf_camera_optical_to_map,
-        image_to_depth_node,
+        image_to_depth_yolo_node,
     ])
