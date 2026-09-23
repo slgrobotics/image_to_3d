@@ -1,77 +1,91 @@
 
 Back to [Package README](https://github.com/slgrobotics/image_to_3d#depth-anything-v2-http-server)
 
-## Running HTTP Depth Server 
+## YOLO Object Detection - using HTTP Server
 
-> A machine with **Nvidia Geforce RTX 3060** or better is required.
+> **Note:** Clients (including ROS nodes) can be anywhere on the LAN
 
-> Clients (including ROS nodes) can be anywhere on the LAN
+### Setup
 
-Install *Python virtual environment*:
+This directory contains two programs:
 
-```
-sudo apt install python3.14-venv
-
-cd ~/robot_ws/src/image_to_3d/depth_anything
-python3 -m venv venv
-source venv/bin/activate
-```
-# YOLO Object Detection
-
-This directory contains two YOLO programs:
-
-- `yolo_server.py` runs an HTTP server that accepts an image and returns object
-   detections as JSON.
-- `test_yolo.py` runs local real-time detection from a camera and displays an
-   annotated OpenCV window.
+- `yolo_server.py` runs an HTTP server that accepts an image and returns object detections as JSON.
+- `test_yolo.py` runs local real-time detection from a camera (webcam) and displays an annotated OpenCV window.
 
 Both scripts use the `yolo26s.pt` model and a confidence threshold of `0.40`.
 
-## Setup
+**Prerequisites:**
+- A machine with a CUDA-capable GPU and the appropriate drivers installed.
+- a webcam or other camera connected to the machine.
+- the test script will open a window to display the annotated camera stream, so a graphical environment is desirable.
 
-Create and activate a virtual environment in this directory:
-
-```bash
-cd ~/husky_ws/src/image_to_3d/yolo_server
+**Preparation:**
+```
+cd ~/robot_ws/src/image_to_3d/yolo_server
 python3 -m venv .venv
 source .venv/bin/activate
+```
+
+**in the virtual environment, install the required packages:**
+```
 python -m pip install --upgrade pip
+pip install torch torchvision ultralytics fastapi uvicorn opencv-python numpy "transformers>=4.45" pillow
 ```
 
-Install the required packages:
-
-```bash
-pip install torch torchvision ultralytics fastapi uvicorn opencv-python numpy
-```
-
+**check that CUDA is available and the GPU is detected:**
 The scripts use CUDA when it is available. Verify the PyTorch installation with:
-
 ```bash
 python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA:', torch.cuda.is_available()); print('GPU:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
+
+# Expect:
+#    PyTorch: 2.14.0+cu130
+#    CUDA: True                       (CUDA available)
+#    GPU: NVIDIA GeForce RTX 3060 Ti  (or whatever GPU you have)
 ```
 
-The model file must be available as `yolo26s.pt` in the working directory. If
-it is not present, Ultralytics may download it when the model is initialized.
+**run a test inference to download the model and check that it works**
+this will load OLO26s model, open the camera, and after a short delay
+display the annotated stream in a window:
+```
+yolo predict model=yolo26s.pt source=0 show=True device=0
+```
 
-## HTTP Server
+### Camera/Webcam Test
 
-Start the server from this directory:
+`test_yolo.py` is a standalone local test. It opens camera `0` (e.g. a webcam), runs detection
+continuously, prints each detection, overlays inference timing, and displays the annotated stream:
 
 ```bash
+cd ~/robot_ws/src/image_to_3d/yolo_server
+source .venv/bin/activate
+python3 test_yolo.py
+```
+
+Press `q` or `Esc` to stop. `Ctrl+C` also shuts down cleanly and releases the camera.
+
+### Running HTTP Image Inference Server 
+
+> **Note:** The model file must be available as `yolo26s.pt` in the working directory. If
+> it is not present, Ultralytics may download it when the model is initialized.
+
+Start the server:
+
+```bash
+cd ~/robot_ws/src/image_to_3d/yolo_server
 source .venv/bin/activate
 python3 yolo_server.py
 ```
 
+It should be ready to take HTTP/POST images and will return depth maps/images in PNG uint_16 format, ready for ROS2 processing.
+
 The server listens at `http://localhost:5002`.
 
-### Endpoints
-
-`GET /` returns basic service information.
-
-`GET /health` returns the server health status.
-
-`POST /detect` accepts JPEG or PNG image bytes in the request body and returns
-JSON. For example:
+#### Endpoints:
+- `GET /` returns basic service information:
+  - `{"service":"YOLO Object Detection","model":"yolo26s.pt","device":"NVIDIA GeForce RTX 3060 Ti","endpoint":"/detect"}`
+- `GET /health` returns the server health status:
+  - `{"status":"ok","model":"yolo26s.pt","device":"NVIDIA GeForce RTX 3060 Ti"}`
+- `POST /detect` accepts JPEG or PNG image bytes in the request body and returns JSON. For example:
 
 ```bash
 curl -X POST \
@@ -107,65 +121,18 @@ Example response:
 }
 ```
 
-Bounding-box coordinates are pixel coordinates in the input image. An image
-with no detections returns an empty `detections` array. Empty or invalid image
-requests return HTTP `400`; inference failures return HTTP `500`.
-
-## Camera Test
-
-`test_yolo.py` is a standalone local test. It opens camera `0`, runs detection
-continuously, prints each detection, overlays inference timing, and displays
-the annotated stream:
-
-```bash
-source .venv/bin/activate
-python3 test_yolo.py
-```
-
-Press `q` or `Esc` to stop. `Ctrl+C` also shuts down cleanly and releases the
-camera.
-
-With the virtual environment activated install *PyTorch*:
-
-```
-python -m pip install --upgrade pip
-pip install torch torchvision
-```
-
-Check *PyTorch* installation:
-```
-python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA:', torch.cuda.is_available()); print('GPU:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'NONE')"
-   PyTorch: 2.14.0+cu130
-   CUDA: True
-   GPU: NVIDIA GeForce RTX 3060 Ti
-```
-
-More installs:
-```
-pip install "transformers>=4.45" pillow opencv-python
-pip install fastapi uvicorn
-
-```
-
-Run the server:
-```
-./depth_server.py
-
-```
-
-It should be ready to take HTTP/POST images and will return depth maps/images in PNG uint_16 format, ready for ROS2 processing.
-
-URL: http://localhost:5001/
+- Bounding-box coordinates are pixel coordinates in the input image.
+- An image with no detections returns an empty `detections` array.
+- Empty or invalid image requests return HTTP `400`.
+- Inference failures return HTTP `500`.
 
 > Check out `~/robot_ws/src/image_to_3d/tests` directory
 
 The following tests interact with the server in a client role:
 
-- tests/test_depth_server.py
-- tests/test_depth_server_gui.py
-- tests/test_depth_webcam.py
-
-A stand-alone `tests/test_depth.py` can directly call Depth Anything V2 model (while running under a virtual environment).
+- `tests/test_yolo_server.py`
+- `tests/test_yolo_server_gui.py`
+- `tests/test_yolo_webcam.py`
 
 -------------------------
 
