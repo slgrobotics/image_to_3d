@@ -114,7 +114,6 @@ Test:
 # ----------------------------------------------------------------------
 
 MODEL_NAME = "depth-anything/Depth-Anything-V2-Metric-Indoor-Base-hf"
-
 # MODEL_NAME = "depth-anything/Depth-Anything-V2-Metric-Outdoor-Base-hf"
 # MODEL_NAME = "depth-anything/Depth-Anything-V2-Base-hf"
 
@@ -124,7 +123,8 @@ PORT = 5001
 # experimental scale factor for depth values (adjust these to your camera):
 #DEPTH_MULTIPLIER = 1.15   # for HuskyLens 2 stock camera module
 #DEPTH_MULTIPLIER = 0.5  # for HuskyLens 2 wide-angle camera module
-DEPTH_MULTIPLIER = 0.45  # for Arducam wide-angle 160 degrees camera module (3280x2464 10-bit RGGB sensor, default 800x600 stream resolution)
+DEPTH_MULTIPLIER = 0.45  # for Arducam wide-angle 160 degrees FOV camera module (3280x2464 10-bit RGGB sensor, default 800x600 stream resolution)
+#DEPTH_MULTIPLIER = 0.2  # for Arducam 105 degrees FOV camera module and Metric-Outdoor-Base model
 
 
 # ----------------------------------------------------------------------
