@@ -301,14 +301,31 @@ sudo apt install ros-${ROS_DISTRO}-vision-msgs-rviz-plugins
 ```
 <img alt="RViz2 Detection3DArray" src="https://github.com/user-attachments/assets/684ff2ec-978d-4259-a151-8abd712f6782" />
 
+### Perception Adapter node (BT connection)
+
 > **Note:** there's a way to convert detections to a set of events to be consumed by Behavior trees.
 > A similar node exists [here](https://github.com/slgrobotics/face_gesture_sensor/blob/main/face_gesture_sensor/perception_adapter.py).
 > Its general architecture is described [here](https://github.com/slgrobotics/articubot_one/wiki/Behavior-Tree-for-Gesture-and-Face-Detection-Sensor).
-> This is work in progress.
 
-### Perception Adapter node (BT connection)
+The `perception_adapter_node` subscribes to:
+- `camera_3d/detections` (Detection3DArray)
 
-TBD
+and publishes (for compatibility with [slg_bt_plugins](https://github.com/slgrobotics/slg_bt_plugins)):
+- `/fgs/face_detected`  | Bool
+- `/fgs/face_yaw_error`  | Float32
+- `/fgs/gesture_command`  | String
+
+For text-to-speech (to pronounce detections, if `person_detected_text` parameter is not empty):
+```
+sudo apt install flite
+```
+
+ROS parameters:
+- `person_detected_sound`: ""  # `aplay` is standard on Ubuntu 24, provide full path of a sound file here
+- `person_detected_text`:  ""  # what to say, install text-to-speech: `sudo apt install flite`
+- `min_confidence`: 0.6
+- `person_cooldown_sec`: 3.0   # do not flood output with frequent detection messages
+- `ticker_interval_sec`: 0.1   # Ticker interval (defines rate of publishing of all messages)
 
 ### Depth To Laser Scan Node
 
