@@ -15,6 +15,7 @@ Contents:
 - [Fake CameraInfo node](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#fake-camerainfo-node)
 - [Image to Depth node](https://github.com/slgrobotics/image_to_3d#image-to-depth-node)
 - [Image to Depth Plus YOLO node](https://github.com/slgrobotics/image_to_3d/tree/main#image-to-depth-plus-yolo-node)
+- [Perception Adapter node (BT connection)](https://github.com/slgrobotics/image_to_3d/tree/main#perception-adapter-node-bt-connection)
 - [Depth To Laser Scan node](https://github.com/slgrobotics/image_to_3d#depth-to-laser-scan-node)
 - [Producing PointCloud2 from Depth topic](https://github.com/slgrobotics/image_to_3d#producing-pointcloud2-from-depth-topic)
 - [Calibrating Pointcloud](https://github.com/slgrobotics/image_to_3d#calibrating-pointcloud)
@@ -284,13 +285,30 @@ Depth image returned by *Depth Anything V2 server* and published by *image_to_de
 
 It is similar to the *Image to Depth node*, but also:
 - Posts each camera image to http://localhost:5002/detect.
-- Parses YOLO JSON detections.
-- Uses each bounding-box center with the returned depth map.
-- Projects pixels into 3D using *CameraInfo*.
-- Samples a 5x5 neighborhood and uses the median valid depth.
-- Publishes `vision_msgs/Detection3DArray` on: `camera_3d/detections`
-- Publishes coordinates in the camera optical frame from the image header.
+- Parses YOLO *JSON* detections.
+- Relates each bounding-box center with the returned depth map.
+- Projects center pixels into 3D using *CameraInfo*.
+- Publishes coordinates of detected objects in the camera optical frame.
 - Estimates 3D bounding-box width and height.
+
+The node publishes, among others, `vision_msgs/Detection3DArray` on `camera_3d/detections`:
+
+<img alt="RQT Detection3DArray" src="https://github.com/user-attachments/assets/e310068b-745a-4909-926d-aac8de8fbbb1" />
+
+With the plugin you can see detections in 3D space: 
+```
+sudo apt install ros-${ROS_DISTRO}-vision-msgs-rviz-plugins
+```
+<img alt="RViz2 Detection3DArray" src="https://github.com/user-attachments/assets/684ff2ec-978d-4259-a151-8abd712f6782" />
+
+> **Note:** there's a way to convert detections to a set of events to be consumed by Behavior trees.
+> A similar node exists [here](https://github.com/slgrobotics/face_gesture_sensor/blob/main/face_gesture_sensor/perception_adapter.py).
+> Its general architecture is described [here](https://github.com/slgrobotics/articubot_one/wiki/Behavior-Tree-for-Gesture-and-Face-Detection-Sensor).
+> This is work in progress.
+
+### Perception Adapter node (BT connection)
+
+TBD
 
 ### Depth To Laser Scan Node
 
