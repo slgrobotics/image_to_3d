@@ -30,8 +30,8 @@ git clone https://github.com/slgrobotics/image_to_3d.git
 Create and activate Python virtual environment:
 ```
 cd ~/robot_ws/src/image_to_3d/yolo_server
-python3 -m venv .venv
-source .venv/bin/activate
+python3 -m venv venv_yolo
+source venv_yolo/bin/activate
 ```
 
 **in the virtual environment, install the required packages:**
@@ -65,7 +65,7 @@ continuously, prints each detection, overlays inference timing, and displays the
 
 ```bash
 cd ~/robot_ws/src/image_to_3d/yolo_server
-source .venv/bin/activate
+source /bin/activate
 python3 test_yolo.py
 ```
 
@@ -82,7 +82,7 @@ Start the server:
 
 ```bash
 cd ~/robot_ws/src/image_to_3d/yolo_server
-source .venv/bin/activate
+source /bin/activate
 python3 yolo_server.py
 ```
 
