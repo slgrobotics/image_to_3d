@@ -12,7 +12,7 @@ Launch it:
         input_topic:=camera_3d/depth/image_16UC1 \
         camera_info_topic:=camera_3d/depth/camera_info \
         output_topic:=camera_3d/scan \
-        target_frame:=camera_3d_link_optical \
+        target_frame:=camera_3d_link_laserscan \
         num_scan_bins:=160 \
         min_height:=-0.1 \
         max_height:=0.1 \
@@ -52,7 +52,7 @@ def generate_launch_description():
         description='LaserScan output topic')
 
     target_frame_arg = DeclareLaunchArgument(
-        'target_frame', default_value='camera_3d_link',
+        'target_frame', default_value='camera_3d_link_laserscan',
         description='Frame ID for the published LaserScan')
 
     min_height_arg = DeclareLaunchArgument(

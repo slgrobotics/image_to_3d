@@ -60,19 +60,48 @@ def generate_launch_description():
                     ]
     )
 
-
     # static transform publisher "camera_3d_link_optical->camera_3d_link" for RViz2:
     tf_camera_optical_to_map = Node(package = "tf2_ros", 
                     executable = "static_transform_publisher",
                     arguments=[
-                        '--x', '0.0',     # X translation in meters
-                        '--y', '0.0',     # Y translation in meters
-                        '--z', '0.0',     # Z translation in meters (camera height above ground)
+                        '--x', '0.0',       # X translation in meters
+                        '--y', '0.0',       # Y translation in meters
+                        '--z', '0.0',       # Z translation in meters (camera height above ground)
                         '--roll', str(-pi / 2),  # Roll in radians
-                        '--pitch', '0.0', # Pitch in radians
+                        '--pitch', '0.0',   # Pitch in radians
                         '--yaw', str(pi / 2),   # Yaw in radians (90 degrees)
                         '--frame-id', 'camera_3d_link', # Parent frame ID
                         '--child-frame-id', 'camera_3d_link_optical' # Child frame ID
+                    ]
+    )
+
+    # static transform publisher "camera_3d_link_laserscan->camera_3d_link" for RViz2:
+    tf_laser_scan_to_map = Node(package = "tf2_ros", 
+                    executable = "static_transform_publisher",
+                    arguments=[
+                        '--x', '0.0',       # X translation in meters
+                        '--y', '0.0',       # Y translation in meters
+                        '--z', '0.0',       # Z translation in meters (camera height above ground)
+                        '--roll', str(pi),  # Roll in radians
+                        '--pitch', '0.0',   # Pitch in radians
+                        '--yaw', str(pi),   # Yaw in radians (90 degrees)
+                        '--frame-id', 'camera_3d_link', # Parent frame ID
+                        '--child-frame-id', 'camera_3d_link_laserscan' # Child frame ID
+                    ]
+    )
+
+    # static transform publisher "camera_3d_link_laserscan->camera_3d_link_optical" for RViz2:
+    tf_laser_scan_to_optical = Node(package = "tf2_ros", 
+                    executable = "static_transform_publisher",
+                    arguments=[
+                        '--x', '0.0',       # X translation in meters
+                        '--y', '0.0',       # Y translation in meters
+                        '--z', '0.0',       # Z translation in meters (camera height above ground)
+                        '--roll', str(-pi / 2), # Roll in radians
+                        '--pitch', str(-pi / 2), # Pitch in radians
+                        '--yaw', '0.0',     # Yaw in radians (90 degrees)
+                        '--frame-id', 'camera_3d_link_optical', # Parent frame ID
+                        '--child-frame-id', 'camera_3d_link_laserscan' # Child frame ID
                     ]
     )
 
@@ -82,4 +111,6 @@ def generate_launch_description():
         camera_pos_pitch_arg,
         tf_camera_to_map,
         tf_camera_optical_to_map,
+        #tf_laser_scan_to_map,
+        tf_laser_scan_to_optical,
     ])
