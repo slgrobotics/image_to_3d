@@ -3,12 +3,18 @@
 """
 camera_to_map_tf.launch.py - relates camera and camera optical frame to map frame for RViz2 demo
 
+If this package is launched without corresponding robot's URDF and TF tree,
+  then we need to publish a static transform from the camera optical frame to the map frame
+  for RViz2 visualization. The following static transform publishers are for that purpose.
+
+See https://github.com/slgrobotics/huskylens2_ros2/blob/main/README.md#the-optical-coordinate-system-for-cameras-and-sensors
+
 Launch it:
     ros2 launch image_to_3d camera_to_map_tf.launch.py
 
     ros2 launch image_to_3d camera_to_map_tf.launch.py \
-        request_timeout:=10.0 \
-        request_timeout:=10.0
+        camera_pos_height:=1.0 \
+        camera_pos_pitch:=10.0
 
 """
 
@@ -16,7 +22,7 @@ import os
 from math import pi
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, LogInfo
 from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 
@@ -26,23 +32,20 @@ def generate_launch_description():
 
     camera_pos_height_arg = DeclareLaunchArgument(
         'camera_pos_height',
-        default_value= '1.0',
+        #default_value= '1.0',   # Dragger's "stereo" either of the cameras
+        default_value= '0.57',   # Seggy's 160 degrees FOV camera
         description='Camera position over ground plane')
 
     camera_pos_pitch_arg = DeclareLaunchArgument(
         'camera_pos_pitch',
-        default_value='4.0',
-        description='Camera pitch related to ground plane, degrees, looking up = positive')
-
-
-    # If this package is launched without corresponding robot's URDF and TF tree,
-    #  then we need to publish a static transform from the camera optical frame to the map frame
-    #  for RViz2 visualization. The following two static transform publishers are for that purpose.
-    # See https://github.com/slgrobotics/huskylens2_ros2/blob/main/README.md#the-optical-coordinate-system-for-cameras-and-sensors
+        #default_value='4.0',   # Dragger's "stereo" either of the cameras
+        default_value='0.0',    # Seggy's 160 degrees FOV camera
+        description='Compensating camera pitch related to ground plane, degrees, if looking up = positive')
 
     # static transform publisher "camera_3d_link->map" for RViz2:
-    tf_camera_to_map = Node(package = "tf2_ros", 
+    tf_camera_3d_to_map = Node(package = "tf2_ros", 
                     executable = "static_transform_publisher",
+                    name="tf_camera_3d_to_map",
                     arguments=[
                         '--x', '5.0',     # X translation in meters
                         '--y', '0.0',     # Y translation in meters
@@ -61,8 +64,9 @@ def generate_launch_description():
     )
 
     # static transform publisher "camera_3d_link_optical->camera_3d_link" for RViz2:
-    tf_camera_optical_to_map = Node(package = "tf2_ros", 
+    tf_camera_3d_optical_to_map = Node(package = "tf2_ros", 
                     executable = "static_transform_publisher",
+                    name="tf_camera_3d_optical_to_map",
                     arguments=[
                         '--x', '0.0',       # X translation in meters
                         '--y', '0.0',       # Y translation in meters
@@ -76,8 +80,9 @@ def generate_launch_description():
     )
 
     # static transform publisher "camera_3d_link_laserscan->camera_3d_link" for RViz2:
-    tf_laser_scan_to_map = Node(package = "tf2_ros", 
+    tf_camera_3d_laserscan_to_map = Node(package = "tf2_ros", 
                     executable = "static_transform_publisher",
+                    name="tf_camera_3d_laserscan_to_map",
                     arguments=[
                         '--x', '0.0',       # X translation in meters
                         '--y', '0.0',       # Y translation in meters
@@ -91,8 +96,9 @@ def generate_launch_description():
     )
 
     # static transform publisher "camera_3d_link_laserscan->camera_3d_link_optical" for RViz2:
-    tf_laser_scan_to_optical = Node(package = "tf2_ros", 
+    tf_camera_3d_laserscan_to_optical = Node(package = "tf2_ros", 
                     executable = "static_transform_publisher",
+                    name="tf_camera_3d_laserscan_to_optical",
                     arguments=[
                         '--x', '0.0',       # X translation in meters
                         '--y', '0.0',       # Y translation in meters
@@ -109,8 +115,21 @@ def generate_launch_description():
     return LaunchDescription([
         camera_pos_height_arg,
         camera_pos_pitch_arg,
-        tf_camera_to_map,
-        tf_camera_optical_to_map,
-        #tf_laser_scan_to_map,
-        tf_laser_scan_to_optical,
+        LogInfo(msg=[
+            'Camera position:',
+        ]),
+        LogInfo(msg=[
+            '    camera_pos_height:=',
+            LaunchConfiguration('camera_pos_height'),
+            ' m',
+        ]),
+        LogInfo(msg=[
+            '    camera_pos_pitch:=',
+            LaunchConfiguration('camera_pos_pitch'),
+            ' degrees',
+        ]),
+        tf_camera_3d_to_map,
+        tf_camera_3d_optical_to_map,
+        #tf_camera_3d_laserscan_to_map,
+        tf_camera_3d_laserscan_to_optical,
     ])
