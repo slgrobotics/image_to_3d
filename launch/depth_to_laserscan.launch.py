@@ -106,21 +106,6 @@ def generate_launch_description():
         ],
     )
 
-    # static transform publisher for RViz2:
-    tf_camera_to_map = Node(package = "tf2_ros", 
-                    executable = "static_transform_publisher",
-                    arguments=[
-                        '--x', '5.0',     # X translation in meters
-                        '--y', '0.0',     # Y translation in meters
-                        '--z', '0.57',    # Z translation in meters (camera height above ground)
-                        '--roll',  '3.14159265359',  # Roll in radians
-                        '--pitch', '0.0', # Pitch in radians
-                        '--yaw',   '3.14159265359',   # Yaw in radians (e.g., 1.57079632679 = 90 degrees)
-                        '--frame-id', 'map', # Parent frame ID
-                        '--child-frame-id', 'camera_3d_link' # Child frame ID
-                    ]
-    )
-
     return LaunchDescription([
         input_topic_arg,
         camera_info_topic_arg,
@@ -133,6 +118,5 @@ def generate_launch_description():
         range_max_arg,
         scan_time_arg,
         config_arg,
-        tf_camera_to_map,
         depth_node,
     ])
