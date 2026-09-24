@@ -7,18 +7,18 @@ Back to [Main Project Home](https://github.com/slgrobotics/articubot_one/wiki)
 - It uses *Depth Anything V2* AI model. A machine with Nvidia Geforce RTX 3060 or better is required (somewhere on LAN).
 
 Contents:
-- [Build and run](https://github.com/slgrobotics/image_to_3d#build-and-run)
-- [Depth Anything V2 HTTP Server](https://github.com/slgrobotics/image_to_3d#depth-anything-v2-http-server)
-- [Image Inference (YOLO) HTTP Server](https://github.com/slgrobotics/image_to_3d#image-inference-yolo-http-server)
-- [Camera setup](https://github.com/slgrobotics/image_to_3d#camera-setup)
-- [Running a demo](https://github.com/slgrobotics/image_to_3d#running-a-demo)
-- [Fake CameraInfo node](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#fake-camerainfo-node)
-- [Image to Depth node](https://github.com/slgrobotics/image_to_3d#image-to-depth-node)
-- [Image to Depth Plus YOLO node](https://github.com/slgrobotics/image_to_3d/tree/main#image-to-depth-plus-yolo-node)
-- [Perception Adapter node (BT connection)](https://github.com/slgrobotics/image_to_3d/tree/main#perception-adapter-node-bt-connection)
-- [Depth To Laser Scan node](https://github.com/slgrobotics/image_to_3d#depth-to-laser-scan-node)
-- [Producing PointCloud2 from Depth topic](https://github.com/slgrobotics/image_to_3d#producing-pointcloud2-from-depth-topic)
-- [Calibrating Pointcloud](https://github.com/slgrobotics/image_to_3d#calibrating-pointcloud)
+- [Build and run](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#build-and-run)
+- [Depth Anything V2 HTTP Server](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#depth-anything-v2-http-server)
+- [Image Inference (YOLO) HTTP Server](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#image-inference-yolo-http-server)
+- [Camera setup](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#camera-setup)
+- [Running a demo](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#running-a-demo)
+- [Fake CameraInfo node](https://github.com/slgrobotics/image_to_3d/blob/main/README.md/blob/main/README.md#fake-camerainfo-node)
+- [Image to Depth node](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#image-to-depth-node)
+- [Image to Depth Plus YOLO node](https://github.com/slgrobotics/image_to_3d/tree/main/blob/main/README.md#image-to-depth-plus-yolo-node)
+- [Perception Adapter node (BT connection)](https://github.com/slgrobotics/image_to_3d/tree/blob/main/README.md#perception-adapter-node-bt-connection)
+- [Depth To Laser Scan node](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#depth-to-laser-scan-node)
+- [Producing PointCloud2 from Depth topic](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#producing-pointcloud2-from-depth-topic)
+- [Calibrating Pointcloud](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#calibrating-pointcloud)
 
 -----------------------------
 
