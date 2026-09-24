@@ -3,8 +3,10 @@ Back to [Main Project Home](https://github.com/slgrobotics/articubot_one/wiki)
 ## Image to 3D ROS2 Package
 **image_to_3d** is a ROS 2 package for converting monocular camera images into depth and derived 3D representations.
 - It provides nodes for image-to-depth estimation and for converting depth images into *PointCloud2* and *LaserScan* messages.
-- It also contains node that translates camera X,Y pixel coordinates to 3D coordinates.
+- It contains node that translates camera X,Y pixel coordinates to 3D coordinates.
 - It uses *Depth Anything V2* AI model. A machine with Nvidia Geforce RTX 3060 or better is required (somewhere on LAN).
+- It uses *YOLO* model for Object Recognition
+- It contains Perception Adapter to forward events to Behavior Trees via custom plugins.
 
 Contents:
 - [Build and run](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#build-and-run)
