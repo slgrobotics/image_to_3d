@@ -319,10 +319,14 @@ The `perception_adapter_node` subscribes to:
 - `camera_3d/detections` (Detection3DArray)
 
 and publishes (for compatibility with [slg_bt_plugins](https://github.com/slgrobotics/slg_bt_plugins)):
-- `/fgs/face_detected`  | Bool
-- `/fgs/face_yaw_error`  | Float32
-- `/fgs/gesture_command`  | String
-
+```
+|       Topic               |       Type                |        Purpose               |
+|---------------------------|---------------------------|------------------------------|
+| `/bt/face_gesture_detect` | `sensor_msgs/Illuminance` | Combined BT message          |
+| `/fgs/face_detected`      | `std_msgs/Bool`           | Target visible flag          |
+| `/fgs/face_yaw_error`     | `std_msgs/Float32`        | Horizontal angle error       |
+| `/fgs/gesture_command`    | `std_msgs/String`         | Command derived from objects |
+```
 For text-to-speech (to pronounce detections, if `person_detected_text` parameter is not empty):
 ```
 sudo apt install flite
