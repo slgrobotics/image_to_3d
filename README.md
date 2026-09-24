@@ -181,9 +181,15 @@ This is how RQT shows camera topics (and new synthesized camera topics under `/c
 
 ### Running a demo
 
+Prerequisites:
+```
+sudo apt install flite ros-${ROS_DISTRO}-usb-cam ros-${ROS_DISTRO}-vision-msgs-rviz-plugins ros-${ROS_DISTRO}-image-pipeline
+```
+
 With:
 - camera publishing images to `camera/image_raw/compressed` at about ~5 FPS, and
 - Depth Anything V2 HTTP Server at URL: http://localhost:5001/
+- Image Inference (YOLO) HTTP Server at URL: http://localhost:5002/
 
 you can launch a demo and see your monocular image stream magically converting to a 3D scene:
 
