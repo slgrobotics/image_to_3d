@@ -34,13 +34,13 @@ def generate_launch_description():
         'camera_pos_height',
         #default_value= '1.0',   # Dragger's "stereo" either of the cameras
         default_value= '0.57',   # Seggy's 160 degrees FOV camera
-        description='Camera position over ground plane')
+        description='Camera position over the ground plane, meters')
 
     camera_pos_pitch_arg = DeclareLaunchArgument(
         'camera_pos_pitch',
-        #default_value='4.0',   # Dragger's "stereo" either of the cameras
-        default_value='0.0',    # Seggy's 160 degrees FOV camera
-        description='Compensating camera pitch related to ground plane, degrees, if looking up = positive')
+        #default_value='4.0',   # Dragger's "stereo" either of the cameras looks a bit up
+        default_value='-2.0',    # Seggy's 160 degrees FOV camera looks a bit down
+        description='Compensating for camera pitch related to ground plane, degrees, if camera is looking up, have it positive')
 
     # static transform publisher "camera_3d_link->map" for RViz2:
     tf_camera_3d_to_map = Node(package = "tf2_ros", 
