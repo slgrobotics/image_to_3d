@@ -13,8 +13,8 @@ Install *Python virtual environment*:
 sudo apt install python3.14-venv
 
 cd ~/robot_ws/src/image_to_3d/depth_anything
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv venv_depth
+source venv_depth/bin/activate
 ```
 
 With the virtual environment activated install *PyTorch*:
