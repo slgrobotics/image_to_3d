@@ -10,6 +10,7 @@ Panels:
         - /TF1/Tree1
         - /Image1
         - /Detection3DArray1
+        - /Detection3DArray1/Namespaces1
       Splitter Ratio: 0.6097257137298584
     Tree Height: 1355
   - Class: rviz_common/Selection
@@ -99,9 +100,9 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 4.722630500793457
+      Max Intensity: 4.786861419677734
       Min Color: 0; 0; 0
-      Min Intensity: -0.0123443603515625
+      Min Intensity: -0.7704620361328125
       Name: LaserScan
       Position Transformer: XYZ
       Selectable: true
@@ -162,11 +163,11 @@ Visualization Manager:
       Class: vision_msgs_rviz_plugins/Detection3DArray
       ConfigPath: ""
       Enabled: true
-      Line Width: 0.05000000074505806
+      Line Width: 0.009999999776482582
       Name: Detection3DArray
       Namespaces:
-        bounding_box: true
-      Only Edge: false
+        {}
+      Only Edge: true
       Show Score: false
       Topic:
         Depth: 5
@@ -221,25 +222,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 8.920003890991211
+      Distance: 8.820308685302734
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.053112201392650604
-        Y: -0.2167358696460724
-        Z: 0.45304393768310547
+        X: 0.2514653205871582
+        Y: -0.49085691571235657
+        Z: -0.1575128436088562
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.33520302176475525
+      Pitch: 0.4752030670642853
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz_default_plugins)
-      Yaw: 0.18788914382457733
+      Yaw: 0.32788893580436707
     Saved: ~
 Window Geometry:
   Displays:

@@ -33,6 +33,7 @@ def generate_launch_description():
         'launch_rviz.launch.py',
         #'point_cloud_node.launch.py',
         'point_cloud_rgb_node.launch.py',
+        'perception_adapter_node.launch.py',
     ]
 
     return LaunchDescription([

@@ -65,4 +65,11 @@ fake_camera_info_node:
     camera_info_topic: camera_3d/camera_info  # synchronized output with camera image
     frame_id: camera_3d_link_optical
 
-    
+perception_adapter_node:
+  ros__parameters:
+    person_detected_sound: ""  # aplay is standard on Ubuntu 24
+    person_detected_text: ""   # install: sudo apt install flite
+    min_confidence: 0.6
+    face_cooldown_sec: 3.0
+    camera_center_x: 320.0    # Assuming 640px width sensor camera
+    ticker_interval_sec: 0.1  # Ticker interval (defines rate of publishing all messages)

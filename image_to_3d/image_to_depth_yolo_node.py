@@ -261,17 +261,19 @@ class ImageToDepthAndYoloNode(Node):
             y = (pixel_y - cy) * z / fy
             width_pixels = abs(float(bbox['x2']) - float(bbox['x1']))
             height_pixels = abs(float(bbox['y2']) - float(bbox['y1']))
-            class_id = str(item.get('class_id', item.get('class_name', '')))
+            detection_id = str(item.get('class_id', item.get('class_name', '')))
+            class_id = str(item.get('class_name', item.get('class_id', '')))
 
             detection = Detection3D()
             detection.header = header
-            detection.id = class_id
+            detection.id = detection_id
             detection.bbox.center.position.x = x
             detection.bbox.center.position.y = y
             detection.bbox.center.position.z = z
             detection.bbox.center.orientation.w = 1.0
             detection.bbox.size.x = width_pixels * z / fx
             detection.bbox.size.y = height_pixels * z / fy
+            detection.bbox.size.z = 0.3  # small thickness for 3D bounding box
 
             hypothesis = ObjectHypothesisWithPose()
             hypothesis.hypothesis.class_id = class_id

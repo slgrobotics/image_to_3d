@@ -30,6 +30,7 @@ setup(
         'console_scripts': [
             'image_to_depth_node = image_to_3d.image_to_depth_node:main',
             'image_to_depth_yolo_node = image_to_3d.image_to_depth_yolo_node:main',
+            'perception_adapter_node = image_to_3d.perception_adapter_node:main',
             'depth_to_laserscan_node = image_to_3d.depth_to_laserscan_node:main',
             'fake_camera_info_node = image_to_3d.fake_camera_info_node:main',
         ],
