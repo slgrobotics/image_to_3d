@@ -21,22 +21,22 @@ def generate_launch_description():
     person_detected_sound_arg = DeclareLaunchArgument(
         'person_detected_sound',
         default_value='',
-        description='Audio file to play when a face is first detected',
+        description='Audio file to play when a person is first detected',
     )
     person_detected_text_arg = DeclareLaunchArgument(
         'person_detected_text',
         default_value='person detected',
-        description='Text to speak when a face is first detected',
+        description='Text to speak when a person is first detected',
     )
     min_confidence_arg = DeclareLaunchArgument(
         'min_confidence',
         default_value='0.6',
         description='Minimum detection confidence to process',
     )
-    face_cooldown_sec_arg = DeclareLaunchArgument(
-        'face_cooldown_sec',
+    person_cooldown_sec_arg = DeclareLaunchArgument(
+        'person_cooldown_sec',
         default_value='3.0',
-        description='Seconds without a face before resetting tracking state',
+        description='Seconds without a person detection before resetting tracking state',
     )
     ticker_interval_sec_arg = DeclareLaunchArgument(
         'ticker_interval_sec',
@@ -53,7 +53,7 @@ def generate_launch_description():
             'person_detected_sound': LaunchConfiguration('person_detected_sound'),
             'person_detected_text': LaunchConfiguration('person_detected_text'),
             'min_confidence': LaunchConfiguration('min_confidence'),
-            'face_cooldown_sec': LaunchConfiguration('face_cooldown_sec'),
+            'person_cooldown_sec': LaunchConfiguration('person_cooldown_sec'),
             'ticker_interval_sec': LaunchConfiguration('ticker_interval_sec'),
         }],
     )
@@ -62,7 +62,7 @@ def generate_launch_description():
         person_detected_sound_arg,
         person_detected_text_arg,
         min_confidence_arg,
-        face_cooldown_sec_arg,
+        person_cooldown_sec_arg,
         ticker_interval_sec_arg,
         perception_adapter,
     ])

@@ -26,13 +26,13 @@ Design overview (intentional & Nav2-friendly)
 
 class PerceptionAdapter(Node):
     """
-        Perception → Behavior adapter for 3D YOLO detections.
+    Perception → Behavior adapter for 3D YOLO detections.
 
     Responsibilities:
-            * Listen to Detection3DArray messages from the YOLO perception node
+      * Listen to Detection3DArray messages from the YOLO perception node
       * Detect semantic events (FACE, LIKE, OK, STOP, YES, SIX)
       * Publish BT-friendly signals
-      * Trigger sound playback for face detection
+      * Trigger sound playback for face/person detection
     """
 
     def __init__(self):
@@ -45,16 +45,14 @@ class PerceptionAdapter(Node):
         self.declare_parameter('person_detected_sound', '')
         self.declare_parameter('person_detected_text', '')
         self.declare_parameter('min_confidence', 0.6)
-        self.declare_parameter('face_cooldown_sec', 3.0)
-        self.declare_parameter('camera_center_x', 320.0)    # Assuming 640px width sensor camera
+        self.declare_parameter('person_cooldown_sec', 3.0)
         self.declare_parameter('ticker_interval_sec', 0.1)  # Ticker interval (defines rate of publishing all messages)
 
         input_topic = str(self.get_parameter('input_topic').value)
         self.person_detected_sound = self.get_parameter('person_detected_sound').value
         self.person_detected_text = self.get_parameter('person_detected_text').value
         self.min_conf = self.get_parameter('min_confidence').value
-        self.face_cooldown = self.get_parameter('face_cooldown_sec').value
-        self.camera_center_x = self.get_parameter('camera_center_x').value
+        self.person_cooldown = self.get_parameter('person_cooldown_sec').value
         self.ticker_interval = self.get_parameter('ticker_interval_sec').value
 
         self.get_logger().info(f'    Input:  {input_topic}')
@@ -63,7 +61,7 @@ class PerceptionAdapter(Node):
 
         # ---- state machine ----
         self.state = 'idle'  # 'idle' or 'tracking'
-        self.last_face_time = 0.0
+        self.last_person_time = 0.0
         self.last_gesture = ''
         self.last_gesture_time = 0.0
         self.last_said = ''
@@ -72,16 +70,16 @@ class PerceptionAdapter(Node):
         self._child_processes = set()
 
         # ---- publishers (Behavior Tree inputs) ----
-        self.face_gesture_detected_pub = self.create_publisher(
+        self.person_gesture_detected_pub = self.create_publisher(
             Illuminance, '/bt/face_gesture_detect', 10  # hack: using Illuminance for boolean, string, float32 and timestamp
         )
 
-        # ---- publishers (anybody's inputs) ----
+        # ---- publishers (anybody's inputs) for compatibility with slg_bt_plugins: https://github.com/slgrobotics/slg_bt_plugins ----
         self.person_detected_pub = self.create_publisher(
             Bool, '/fgs/face_detected', 10
         )
 
-        self.face_yaw_err_pub = self.create_publisher(
+        self.person_yaw_err_pub = self.create_publisher(
             Float32, '/fgs/face_yaw_error', 10
         )
 
@@ -121,8 +119,8 @@ class PerceptionAdapter(Node):
 
                 if label == 'PERSON' or label == 'FACE':
                     center = detection.bbox.center.position
-                    face_angle = atan2(center.x, center.z)
-                    self._handle_face(face_angle)
+                    person_angle = atan2(center.x, center.z)
+                    self._handle_person(person_angle)
                 """
                 elif 'LIKE' in label: # "1 = LIKE (blue)"
                     self._handle_like()
@@ -138,11 +136,11 @@ class PerceptionAdapter(Node):
 
     def _ticker_callback(self):
         """
-        Periodic check: If face not detected for face_cooldown_sec, reset to idle.
+        Periodic check: If face/person not detected for person_cooldown_sec, reset to idle.
         """
         now = time.time()
-        if self.state == 'tracking' and (now - self.last_face_time) > self.face_cooldown:
-            self.get_logger().info("Face disappeared, resetting state to idle")
+        if self.state == 'tracking' and (now - self.last_person_time) > self.person_cooldown:
+            self.get_logger().info("Person disappeared, resetting state to idle")
             self.state = 'idle'
 
     def _say_something(self, text):
@@ -187,42 +185,41 @@ class PerceptionAdapter(Node):
         combo_msg.illuminance = 1.0 if person_detected else 0.0
         combo_msg.variance = angle_error  # Use variance field to send angle error
 
-        self.face_gesture_detected_pub.publish(combo_msg)
+        self.person_gesture_detected_pub.publish(combo_msg)
 
 
     # --------------------------------------------------
     # Semantic handlers
     #
-    # Each handler processes a specific gesture or face detection event.
+    # Each handler processes a specific gesture or face/person detection event.
     # They abstract away low-level details and publish high-level intent messages.
     # --------------------------------------------------
 
-    def _handle_face(self, face_angle):
+    def _handle_person(self, person_angle):
         now = time.time()
-        self.last_face_time = now  # Update last seen time
+        self.last_person_time = now  # Update last seen time
 
-        angle_error = face_angle
+        angle_error = person_angle
         distance_px = angle_error / (pi / (6 * 320))
 
-        self.person_detected_pub.publish(Bool(data=True)) # Face detected event, publish continuously while face is in view
+        self.person_detected_pub.publish(Bool(data=True)) # Person detected event, publish continuously while person is in view
 
-        self.face_yaw_err_pub.publish(Float32(data=float(angle_error))) # Where to turn, publish continuously while face is in view
+        self.person_yaw_err_pub.publish(Float32(data=float(angle_error))) # Where to turn, publish continuously while person is in view
 
-        # Face gesture detected event for BT, publish continuously while face is in view
+        # Person detected event for BT, publish continuously while person is in view
         # Hack: using Illuminance message to send combo info
         bt_gesture = self.last_gesture if (now - self.last_gesture_time) < 1.0 else ''
         self._pub_to_bt(person_detected=True, gesture=bt_gesture, angle_error=float(angle_error))
 
         # State Machine:
-        #    'idle': No face. On detection, greet and switch to 'tracking'.
-        #    'tracking': Face in view. Trace only on significant x-change.
-        # State resets to 'idle' in "_ticker_callback()" if no detection for face_cooldown_sec.
+        #    'idle': No person. On detection, greet and switch to 'tracking'.
+        #    'tracking': Person in view. Trace only on significant x-change.
+        # State resets to 'idle' in "_ticker_callback()" if no detection for person_cooldown_sec.
 
         if self.state == 'idle':
-            # First face detection: greet and start tracking
-            # expect face_x in range 0...640
+            # First person detection: greet and start tracking
             self.get_logger().info(
-                f"Face detected (first time), distance_px: {distance_px} "
+                f"Person detected (first time), distance_px: {distance_px} "
                 f" angle_error: {angle_error}")
 
             if(self.person_detected_sound != ''):
@@ -237,9 +234,9 @@ class PerceptionAdapter(Node):
             self.state = 'tracking'
 
         elif self.state == 'tracking':
-            # continuously publish face position deviation from the center of view, in pixels
+            # continuously publish person position deviation from the center of view, in pixels
             self.get_logger().info(
-                f"Face angle_error: {angle_error}, "
+                f"Person angle_error: {angle_error}, "
                 f"equivalent distance_px: {distance_px}")
 
     """
