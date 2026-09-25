@@ -27,6 +27,7 @@ def generate_launch_description():
     launch_directory = get_package_share_directory('image_to_3d') + '/launch'
     launch_files = [
         'camera_to_map_tf.launch.py',
+        'camera_relay.launch.py',
         'fake_camera_info.launch.py',
         #'image_to_depth_node.launch.py',
         'image_to_depth_yolo_node.launch.py',
