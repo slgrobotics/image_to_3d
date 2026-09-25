@@ -13,6 +13,7 @@ Contents:
 - [Depth Anything V2 HTTP Server](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#depth-anything-v2-http-server)
 - [Image Inference (YOLO) HTTP Server](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#image-inference-yolo-http-server)
 - [Camera setup](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#camera-setup)
+- [Minimizing WiFi Traffic](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#minimizing-wifi-traffic)
 - [Running a demo](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#running-a-demo)
 - [Fake CameraInfo node](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#fake-camerainfo-node)
 - [Image to Depth node](https://github.com/slgrobotics/image_to_3d/blob/main/README.md#image-to-depth-node)
@@ -181,12 +182,88 @@ This is how RQT shows camera topics (and new synthesized camera topics under `/c
 > ```
 > - this is how to use *[compressed transport](https://github.com/slgrobotics/robots_bringup/blob/main/Docs/Sensors/Camera.md#using-compressed-transport)*
 
+### Minimizing WiFi Traffic
+
+The `camera_relay.launch.py` launch file is intended to minimize WiFi Traffic between the robot and the Workstation.
+
+```
+Robot                                      Workstation
+─────                                      ───────────
+
+camera_ros
+    │
+    ▼
+/camera_0/camera/image_raw/compressed
+    │
+    │       Wi-Fi / DDS
+    │       ONE subscriber
+    └───────────────────────────────────► topic_tools relay
+                                                 │
+                                                 ▼
+                                     /camera/image_raw/compressed
+                                                 │
+                                    ┌────────────┼────────────┐
+                                    ▼            ▼            ▼
+                                image_to_3d     RViz2       viewer
+                                processing
+```
+                     
+**Problem:** 
+- a camera on the robot publishes `camera/image_raw/compressed` at ~5 FPS
+- several clients on a Workstation subscribe to it - for processing and viewing
+- each subscription consumes ~7 MBits/s of the WiFi capacity and quickly overwhelms it
+
+**Solution:**
+- remap the original topic on the robot to `camera_0/camera/image_raw/compressed`
+- only allow one client ROS node on the Workstation to subscribe to that camera topic
+- that client (relay) should copy the robot's camera messages to `camera/image_raw/compressed`
+- clients on the Workstation (processing, RViz2, etc.) subscribe to the
+relayed topic, avoiding additional robot-to-workstation camera traffic over WiFi
+
+**Tip:** a typical `run_arducam.sh` Arducam launch file on the robot might look like this:
+```
+#!/bin/bash
+
+#
+# running Arducam at 5 FPS 800x600
+#
+
+set -x
+
+# no remapping:
+#ros2 run camera_ros camera_node --ros-args -p FrameDurationLimits:="[200000,200000]"
+
+# Remap all topics via namespace assignment, produces '/camera_0/camera/image_raw/compressed':
+ros2 run camera_ros camera_node --ros-args -p FrameDurationLimits:="[200000,200000]" -r __ns:=/camera_0
+
+# or, remap individual topic:
+# -r /camera/image_raw/compressed:=/camera_0/camera/image_raw/compressed
+
+set +x
+```
+
+The `camera_relay.launch.py` publishes additional topic, which can be consumed locally on the Workstation:
+```
+xxx@yyy:~$ ros2 topic list
+/camera/image_raw/compressed      <- relayed topic
+/camera_0/camera/camera_info
+/camera_0/camera/image_raw
+/camera_0/camera/image_raw/compressed
+```
+
+Launch it on the Workstation (or as part of `all.launch.py`):
+```
+ros2 launch image_to_3d camera_relay.launch.py
+```
+
 ### Running a demo
 
 Prerequisites:
 ```
 sudo apt install flite ros-${ROS_DISTRO}-usb-cam ros-${ROS_DISTRO}-vision-msgs-rviz-plugins ros-${ROS_DISTRO}-image-pipeline
 ```
+
+**Tip:** if using local webcam, comment out `camera_relay.launch.py` in `all.launch.py`
 
 With:
 - camera publishing images to `camera/image_raw/compressed` at about ~5 FPS, and
