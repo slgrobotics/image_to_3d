@@ -184,7 +184,8 @@ This is how RQT shows camera topics (and new synthesized camera topics under `/c
 
 ### Minimizing WiFi Traffic
 
-The `camera_relay.launch.py` launch file is intended to minimize WiFi Traffic between the robot and the Workstation.
+The `camera_relay.launch.py` launch [file](https://github.com/slgrobotics/image_to_3d/blob/main/launch/camera_relay.launch.py)
+is intended to minimize WiFi Traffic between the robot and the Workstation.
 
 ```
 Robot                                      Workstation
@@ -201,11 +202,14 @@ camera_ros
                                                  │
                                                  ▼
                                      /camera/image_raw/compressed
-                                                 │
-                                    ┌────────────┼────────────┐
-                                    ▼            ▼            ▼
-                                image_to_3d     RViz2       viewer
-                                processing
+                                       │                   │
+                                       │                   ▼
+                                       │        image_transport republish
+                                       │                   │
+                                       │                   ┼────────────┐
+                                       ▼                   ▼            ▼
+                                  image_to_3d            RViz2      RQT Viewer
+                                  processing
 ```
                      
 **Problem:** 
@@ -242,13 +246,18 @@ ros2 run camera_ros camera_node --ros-args -p FrameDurationLimits:="[200000,2000
 set +x
 ```
 
-The `camera_relay.launch.py` publishes additional topic, which can be consumed locally on the Workstation:
+The `camera_relay.launch.py` publishes additional topic, which can be consumed locally on the Workstation.
+
+**Extra bonus:**
+- a `/camera/image_raw` topic is published locally from the uncomressed local topic using `image_transport republish` node.
+
 ```
 xxx@yyy:~$ ros2 topic list
-/camera/image_raw/compressed      <- relayed topic
-/camera_0/camera/camera_info
-/camera_0/camera/image_raw
-/camera_0/camera/image_raw/compressed
+/camera/image_raw/compressed      <- local relayed topic
+/camera/image_raw                 <- locally uncomressed and republished topic
+/camera_0/camera/camera_info           │
+/camera_0/camera/image_raw             │ original camera topics, remapped. Let them stay on the robot.
+/camera_0/camera/image_raw/compressed     <- goes over WiFi to relay node
 ```
 
 Launch it on the Workstation (or as part of `all.launch.py`):
