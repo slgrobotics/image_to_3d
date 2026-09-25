@@ -40,6 +40,9 @@ set +x
 Launch it on the Workstation:
     ros2 launch image_to_3d camera_relay.launch.py
 
+Extra bonus:
+    - a '/camera/image_raw' topic is published locally from the uncomressed local topic
+
 """
 
 from launch import LaunchDescription
@@ -60,30 +63,56 @@ def generate_launch_description():
         default_value='/camera/image_raw/compressed',   # camera on the Workstation
         description='Camera topic as relayed / published on the Workstation')
 
+    camera_view_topic_arg = DeclareLaunchArgument(
+        'camera_view_topic',
+        default_value='/camera/image_raw',
+        description='Uncompressed local viewing topic for RViz or other tools')
+
     camera_topic_relay = Node(
         package='topic_tools',
         executable='relay',
         name='camera_topic_relay',
+        output='screen',
         arguments=[
             LaunchConfiguration('camera_input_topic'),
             LaunchConfiguration('camera_output_topic'),
         ],
+    )
+
+    camera_topic_uncompress = Node(
+        package='image_transport',
+        executable='republish',
+        name='camera_topic_uncompress',
         output='screen',
+        parameters=[{
+            'in_transport': 'compressed',
+            'out_transport': 'raw',
+        }],
+        remappings=[
+            ('in/compressed', LaunchConfiguration('camera_output_topic')),
+            ('out', LaunchConfiguration('camera_view_topic')),
+        ],
     )
 
     return LaunchDescription([
         camera_input_topic_arg,
         camera_output_topic_arg,
+        camera_view_topic_arg,
         LogInfo(msg=[
             'Camera topic relay:',
         ]),
         LogInfo(msg=[
-            '    camera_input_topic:=',
+            '    camera_input_topic:  ',
             LaunchConfiguration('camera_input_topic'),
         ]),
         LogInfo(msg=[
-            '    camera_output_topic:=',
+            '    camera_output_topic: ',
             LaunchConfiguration('camera_output_topic'),
         ]),
+        LogInfo(msg=[
+            '    camera_view_topic:   ',
+            LaunchConfiguration('camera_view_topic'),
+        ]),
         camera_topic_relay,
+        camera_topic_uncompress,
     ])
