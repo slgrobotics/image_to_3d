@@ -574,6 +574,11 @@ You need to re-build and re-launch `all.launch.py`
 > Stock camera depth-calibrated:
 <img alt="Stock camera calibrated" src="https://github.com/user-attachments/assets/339f18de-ce2a-45fb-86bd-f50fdbc14359" />
 
+---------------------
+
+> This is how the Outdoors setup looks like (105 degrees FOV Arducam, round panel at 5 meters):
+
+<img alt="Dragger outdoors" src="https://github.com/user-attachments/assets/bd547314-5545-48a2-9b98-123167dadd54" />
 
 -------------------------
 
