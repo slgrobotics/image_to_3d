@@ -15,6 +15,9 @@ Solution:
     - clients on the Workstation (processing, RViz2, etc.) subscribe to the
           relayed topic, avoiding additional robot-to-workstation camera traffic over WiFi
 
+You may want to set `export FASTDDS_BUILTIN_TRANSPORTS=LARGE_DATA` on all involved machines.
+More insight from AI here: https://chatgpt.com/s/t_6ab71bd9bda88191bea299b9724a4627
+
 Tip: a typical "run_arducam.sh" Arducam launch file on the robot might look like this:
 ------------
 #!/bin/bash
