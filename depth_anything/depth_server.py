@@ -131,17 +131,20 @@ DEPTH_MULTIPLIER = 0.45  # Seggy: Arducam wide-angle 160 degrees FOV camera modu
 # Initialize model
 # ----------------------------------------------------------------------
 
-print(f"DEPTH_MULTIPLIER: {DEPTH_MULTIPLIER}")
-print(f"MODEL_NAME: {MODEL_NAME}", flush=True)
+# Note: expect a silent delay before anything is printed
+print("Started Depth Anything V2 HTTP Server\n", flush=True)
+print(f"    HOST: {HOST}   PORT: {PORT}")
+print(f"    DEPTH_MULTIPLIER: {DEPTH_MULTIPLIER}")
+print(f"    MODEL_NAME: {MODEL_NAME}")
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-print(f"Device: {device}")
+print(f"    Device: {device}")
 
 if device == "cuda":
-    print(f"GPU: {torch.cuda.get_device_name(0)}")
+    print(f"    GPU: {torch.cuda.get_device_name(0)}")
 
-print("Loading model...")
+print("\nIP: Loading model...\n")
 
 processor = AutoImageProcessor.from_pretrained(MODEL_NAME)
 
