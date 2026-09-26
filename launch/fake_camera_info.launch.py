@@ -55,7 +55,12 @@ from launch_ros.actions import Node
 def generate_launch_description():
     arguments = [
         DeclareLaunchArgument(
-            'camera_fov', default_value='92.0,76.0',
+            # for Arducam wide-angle 160 degrees FOV camera module (3280x2464 10-bit RGGB sensor, default 800x600 stream:
+            'camera_fov', default_value='92.0,76.0',    # 92.0,69.1 - if keeping 4:3 frame aspect ratio?
+
+            # for Arducam 105 degrees FOV camera module (3280x2464 10-bit RGGB sensor, default 800x600 stream:
+            #'camera_fov', default_value='66.0,49.58',   # that's true 4:3 frame aspect ratio
+
             description='Camera FOV in degrees as HFOV,VFOV'),
 
         DeclareLaunchArgument(

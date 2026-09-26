@@ -32,7 +32,7 @@ def generate_launch_description():
 
     camera_pos_height_arg = DeclareLaunchArgument(
         'camera_pos_height',
-        #default_value= '1.0',   # Dragger's "stereo" either of the cameras
+        #default_value= '0.4',   # Dragger's "stereo" either of the cameras
         default_value= '0.57',   # Seggy's 160 degrees FOV camera
         description='Camera position over the ground plane, meters')
 
