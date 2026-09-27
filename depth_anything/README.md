@@ -58,7 +58,13 @@ The following tests interact with the server in a client role:
 - tests/test_depth_server_gui.py
 - tests/test_depth_webcam.py
 
-A stand-alone `tests/test_depth.py` can directly call Depth Anything V2 model (while running under a virtual environment).
+A stand-alone `tests/test_depth.py` can directly call Depth Anything V2 model (while running under a virtual environment):
+```
+cd ~/robot_ws/src/image_to_3d/depth_anything
+source venv_depth/bin/activate
+cd ~/robot_ws/src/image_to_3d/tests
+python3 test_depth.py
+```
 
 -------------------------
 
