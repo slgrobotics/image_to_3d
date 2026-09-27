@@ -65,7 +65,7 @@ continuously, prints each detection, overlays inference timing, and displays the
 
 ```bash
 cd ~/robot_ws/src/image_to_3d/yolo_server
-source /bin/activate
+source venv_yolo/bin/activate
 python3 test_yolo.py
 ```
 
@@ -82,7 +82,7 @@ Start the server:
 
 ```bash
 cd ~/robot_ws/src/image_to_3d/yolo_server
-source /bin/activate
+source venv_yolo/bin/activate
 python3 yolo_server.py
 ```
 
@@ -142,14 +142,11 @@ Example response:
 
 The following test interacts with the server in a client role. With the server started (in a *virtual environment*), run the HTTP client in a regular terminal (outside of the virtual environment):
 ```
-tests/test_yolo_server.py
+cd ~/robot_ws/src/image_to_3d/tests
+python3 test_yolo_webcam.py
 ```
 
 It retrieves images from a webcam and sends them to the Image Inference HTTP Server, displaying the returned results in a window.
-
-```
-cd ~/robot_ws/src/image_to_3d/tests$ python3 test_yolo_webcam.py
-```
 
 <img width="1199" height="672" alt="Screenshot from 2026-09-23 17-08-37" src="https://github.com/user-attachments/assets/6fa07073-67a5-48b8-ac68-e54bbd66e85d" />
 
