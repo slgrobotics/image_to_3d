@@ -27,9 +27,10 @@ pip install torch torchvision
 Check *PyTorch* installation:
 ```
 python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA:', torch.cuda.is_available()); print('GPU:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'NONE')"
-   PyTorch: 2.14.0+cu130
-   CUDA: True
-   GPU: NVIDIA GeForce RTX 3060 Ti
+  # Expect:
+  # PyTorch: 2.14.0+cu130
+  # CUDA: True
+  # GPU: NVIDIA GeForce RTX 3060 Ti
 ```
 
 More installs:
