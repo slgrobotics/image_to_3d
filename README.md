@@ -279,8 +279,8 @@ sudo apt install flite ros-${ROS_DISTRO}-usb-cam ros-${ROS_DISTRO}-vision-msgs-r
 
 With:
 - camera publishing images to `camera/image_raw/compressed` at about ~5 FPS, and
-- Depth Anything V2 HTTP Server at URL: http://localhost:5001/
-- Image Inference (YOLO) HTTP Server at URL: http://localhost:5002/
+- Depth Anything V2 HTTP Server at URL: http://localhost:5001/  - see how to [start it](https://github.com/slgrobotics/image_to_3d/blob/main/depth_anything/README.md)
+- Image Inference (YOLO) HTTP Server at URL: http://localhost:5002/  - see how to [start it](https://github.com/slgrobotics/image_to_3d/blob/main/yolo_server/README.md)
 
 you can launch a demo and see your monocular image stream magically converting to a 3D scene:
 
