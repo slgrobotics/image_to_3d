@@ -117,7 +117,8 @@ MODEL_NAME = "depth-anything/Depth-Anything-V2-Metric-Indoor-Base-hf"
 #MODEL_NAME = "depth-anything/Depth-Anything-V2-Metric-Outdoor-Base-hf"
 #MODEL_NAME = "depth-anything/Depth-Anything-V2-Base-hf"
 
-HOST = "localhost"
+#HOST = "localhost"  # access limited to one machine
+HOST = "0.0.0.0"    # access from anywhere
 PORT = 5001
 
 # experimental scale factor for depth values (adjust these to your camera):

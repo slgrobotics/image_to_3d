@@ -25,11 +25,13 @@ import torch
 from fastapi import FastAPI, HTTPException, Request
 from ultralytics import YOLO
 
+#HOST = "localhost"  # access limited to one machine
+HOST = "0.0.0.0"    # access from anywhere
+PORT = 5002
 
 MODEL_NAME = "yolo26s.pt"
-HOST = "localhost"
-PORT = 5002
 CONFIDENCE = 0.40
+
 device = 0 if torch.cuda.is_available() else "cpu"
 device_name = (
 	torch.cuda.get_device_name(0)
